@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KLE Technological University Alumni Career Connect</title>
+  <style>
+    :root{
+      --brand:#1e4d91;
+      --brand-2:#0c2b57;
+      --accent:#ffb703;
+      --bg:#f7f8fb;
+      --card:#ffffff;
+      --text:#1b1f23;
+      --muted:#6b7280;
+      --radius:14px;
+      --ticker-gap:24px;
+      --ticker-speed:45s;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      color:var(--text);
+      background:var(--bg) url('kle_college.webp') no-repeat center center fixed;
+      background-size:cover;
+      line-height:1.45;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* Header */
+    header{
+      background:linear-gradient(135deg,var(--brand),var(--brand-2));
+      color:#fff;
+      padding:20px 16px 60px;
+    }
+    .topbar{
+      max-width:1100px;
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .logo-area{
+      display:flex;
+      align-items:center;
+      gap:16px;
+    }
+    .logo{
+      width:60px;
+      height:60px;
+      border-radius:10px;
+      background:#fff;
+      display:block;
+      object-fit:contain;
+    }
+    .site-meta{ display:flex; flex-direction:column; }
+    .site-title{ margin:0; font-size:1.25rem; font-weight:700; }
+    .site-sub{ margin:2px 0 0; font-size:.9rem; color:#e6eefc; }
+
+    /* Top-right nav links */
+    .nav-links{
+      display:flex;
+      gap:20px;
+      align-items:center;
+    }
+    .nav-links a{
+      color:#fff;
+      text-decoration:none;
+      font-weight:600;
+      font-size:1rem;
+      transition:opacity 0.2s ease;
+    }
+    .nav-links a:hover{ opacity:0.8; }
+
+    .hero{
+      max-width:1100px; margin:18px auto 0; padding:12px 16px 22px; color:#fff;
+    }
+    .hero h1{ margin:10px 0 6px; font-size:1.8rem; }
+    .hero p{ margin:0; color:#e6eefc; }
+
+    /* Ticker */
+    .ticker-section{
+      max-width:1100px;
+      margin:8px auto 40px;
+      padding:0 16px;
+    }
+    .ticker-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+    }
+    .ticker-header h3{ margin:0; }
+    .ticker-rail{
+      position:relative;
+      overflow:hidden;
+      border-radius:var(--radius);
+      background:#fff;
+      border:1px solid #e7ebf4;
+      box-shadow:0 6px 18px rgba(0,0,0,.05);
+    }
+    .ticker-track{
+      display:flex;
+      gap:var(--ticker-gap);
+      width:max-content;
+      padding:14px;
+      will-change:transform;
+      animation:tickerMove var(--ticker-speed) linear infinite;
+    }
+    .ticker-inner{ display:flex; gap:var(--ticker-gap); }
+
+    .tcard{
+      min-width:260px;
+      max-width:260px;
+      background:#fff;
+      border:1px solid #e7ebf4;
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 8px 18px rgba(0,0,0,.04);
+    }
+    .timg{
+      width:100%;
+      aspect-ratio:16/10;
+      object-fit:cover;
+      background:#cbd5e1;
+      display:block;
+    }
+    .tcontent{ padding:10px 12px 12px; }
+    .tline1{
+      font-weight:700;
+      font-size:.98rem;
+      margin:0 0 4px;
+      color:#0f172a;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .tline2{
+      margin:0;
+      color:#475569;
+      font-size:.9rem;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+      min-height:2.5em;
+    }
+
+    @keyframes tickerMove{
+      from{ transform:translateX(0); }
+      to{ transform:translateX(-50%); }
+    }
+
+    footer{
+      padding:24px 16px 40px;
+      color:#6b7280;
+      text-align:center;
+      background:var(--bg);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="logo-area">
+        <img class="logo" src="kle.png" alt="College Logo">
+        <div class="site-meta">
+          <h1 class="site-title">KLE Alumni Career Connect</h1>
+          <p class="site-sub">Connect students with mentors, jobs, and alumni opportunities</p>
+        </div>
+      </div>
+
+      <!-- Top-right navigation -->
+      <nav class="nav-links">
+        <a href="Final.html">Home</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+        <a href="user.html">Sign In</a>
+      </nav>
+    </div>
+  </header>
+
+  <main style="flex-grow:1;">
+    <!-- Highlights Ticker -->
+    <section class="ticker-section">
+      <div class="ticker-header">
+        <h3>Highlights</h3>
+        <div class="small"></div>
+      </div>
+      <div class="ticker-rail">
+        <div class="ticker-track" id="tickerTrack">
+          <div class="ticker-inner" id="tickerInner">
+            <article class="tcard"><img class="timg" src="prabhakar.jpg"><div class="tcontent"><p class="tline1">Dr.Prabhakar Kore</p><p class="tline2">Chancellor and Chairman of KLE</p></div></article>
+            <article class="tcard"><img class="timg" src="ashok.jpg"><div class="tcontent"><p class="tline1">Dr.Ashok Shettar</p><p class="tline2">Prochancellor and Principal of BVB</p></div></article>
+            <article class="tcard"><img class="timg" src=""><div class="tcontent"><p class="tline1">Dr.Vijayalakashmi</p><p class="tline2">HOD SoCSE</p></div></article>
+            <article class="tcard"><img class="timg" src="prakash.jpg"><div class="tcontent"><p class="tline1">Dr.Prakash Tewari</p><p class="tline2">Vice chancellor  of BVB</p></div></article>
+            
+          </div>
+
+          <div class="ticker-inner" aria-hidden="true"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Old Alumni Ticker -->
+    <section class="ticker-section">
+      <div class="ticker-header">
+        <h3>Our Alumni</h3>
+        <div class="small">Notable alumni from past decades</div>
+      </div>
+      <div class="ticker-rail">
+        <div class="ticker-track" id="tickerTrackOld">
+          <div class="ticker-inner" id="tickerInnerOld">
+            <article class="tcard"><img class="timg" src="sudhamurthy.jpg"><div class="tcontent"><p class="tline1">Sudha Murthy</p><p class="tline2">Chairperson of Infosys</p></div></article>
+            <article class="tcard"><img class="timg" src="Basavaraj.jpg"><div class="tcontent"><p class="tline1">Basavaraj Bommai</p><p class="tline2">Former Chief Minister of Karnataka </p></div></article>
+            <article class="tcard"><img class="timg" src="Vivek_Kulkarni.jpg"><div class="tcontent"><p class="tline1">Vivek Kulkarni</p><p class="tline2">Information Technology & Biotechnology Secretary, Government of Karnataka.</p></div></article>
+            <article class="tcard"><img class="timg" src="anil.jpg"><div class="tcontent"><p class="tline1">Dr.Anil Sahasrabudhe</p><p class="tline2">Chairman of NETF and NAAC</p></div></article>
+           
+            <article class="tcard"><img class="timg" src="S_R_Hiremath.jpg"><div class="tcontent"><p class="tline1">S R Hiremath</p><p class="tline2">Member of KLE Society,</p></div></article>
+          
+          </div>
+          <div class="ticker-inner" id="tickerInnerOldClone" aria-hidden="true"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>© 2025 KLE Technological University Alumni Association</footer>
+
+  <script>
+    // Highlights ticker clone
+    const inner=document.getElementById('tickerInner');
+    const track=document.getElementById('tickerTrack');
+    const clonesHolder=track.querySelectorAll('.ticker-inner')[1];
+    clonesHolder.innerHTML=inner.innerHTML;
+
+    // Old Alumni ticker clone
+    const innerOld=document.getElementById('tickerInnerOld');
+    const trackOld=document.getElementById('tickerTrackOld');
+    const clonesHolderOld=document.getElementById('tickerInnerOldClone');
+    clonesHolderOld.innerHTML=innerOld.innerHTML;
+  </script>
+</body>
+</html>
