@@ -41,39 +41,7 @@
       to {opacity: 1;}
     }
 
-    .center-box {
-      background: white;
-      max-width: 400px;
-      margin: 50px auto;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .center-box h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #2563eb;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
-    button.primary {
-      width: 100%;
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 15px;
-      cursor: pointer;
-    }
-    button.primary:hover { background: #1e4fd1; }
-
+    /* Home grid */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -147,25 +115,11 @@
     th {
       background: #eff6ff;
     }
-
-    .filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-      align-items: center;
-    }
-    .filter-bar input {
-      flex: 1;
-      min-width: 200px;
-    }
-    .filter-bar select {
-      min-width: 120px;
-    }
   </style>
 </head>
 <body>
 
+  <!-- Header -->
   <header>
     <h1>Alumni Connect</h1>
     <nav id="navbar">
@@ -177,31 +131,8 @@
     </nav>
   </header>
 
-  <!-- Login -->
-  <div id="login" class="page" style="display: block;">
-    <div class="center-box">
-      <h2>Student Login</h2>
-      <input type="text" placeholder="Email">
-      <input type="password" placeholder="Password">
-      <button class="primary" onclick="showPage('home')">Login</button>
-      <p style="text-align:center; font-size:13px;">New user? <a href="#" onclick="showPage('register')">Register</a></p>
-    </div>
-  </div>
-
-  <!-- Register -->
-  <div id="register" class="page">
-    <div class="center-box">
-      <h2>Student Registration</h2>
-      <input type="text" placeholder="Full Name">
-      <input type="email" placeholder="Email">
-      <input type="password" placeholder="Password">
-      <input type="password" placeholder="Confirm Password">
-      <button class="primary" onclick="showPage('login')">Register</button>
-    </div>
-  </div>
-
-  <!-- Home -->
-  <div id="home" class="page">
+  <!-- Home Page -->
+  <div id="home" class="page" style="display:block;">
     <h2>Find Alumni Guidance</h2>
     <div class="grid" id="alumniGrid"></div>
   </div>
@@ -239,28 +170,6 @@
   <!-- Alumni Directory -->
   <div id="alumni" class="page">
     <h2>Alumni Directory</h2>
-    <div class="filter-bar">
-      <input type="text" id="searchInput" placeholder="Search by name or domain..." oninput="filterAlumni()">
-      <select id="deptFilter" onchange="filterAlumni()">
-        <option value="">Department</option>
-        <option>CSE</option>
-        <option>ECE</option>
-        <option>EEE</option>
-        <option>ME</option>
-      </select>
-      <select id="yearFilter" onchange="filterAlumni()">
-        <option value="">Year</option>
-        <option>2023</option>
-        <option>2022</option>
-        <option>2021</option>
-      </select>
-      <select id="domainFilter" onchange="filterAlumni()">
-        <option value="">Domain</option>
-        <option>AI & ML</option>
-        <option>Cybersecurity</option>
-        <option>Data Analyst</option>
-      </select>
-    </div>
     <div class="grid" id="alumniList"></div>
   </div>
 
@@ -282,18 +191,18 @@
       { name: "Priya S", dept: "EEE", year: 2021, domain: "Data Analyst", rating: 5, img: "https://i.pravatar.cc/80?img=5" }
     ];
 
-    const pages = ["login","register","home","alumni","requests","profile"];
+    const pages = ["home","alumni","requests","profile"];
     function showPage(id){
       pages.forEach(p => document.getElementById(p).style.display = "none");
       document.getElementById(id).style.display = "block";
-      document.getElementById("navbar").style.display = (id === "login" || id === "register") ? "none" : "flex";
     }
 
-    function logout(){ showPage('login'); }
+    function logout(){ window.location.href = "Final.html"; }
 
-    // Populate alumni cards
+    // Render alumni cards
     const list = document.getElementById("alumniList");
     const grid = document.getElementById("alumniGrid");
+
     function renderAlumni(data){
       list.innerHTML = "";
       grid.innerHTML = "";
@@ -303,9 +212,9 @@
             <img src="${a.img}" alt="photo">
             <h3>${a.name}</h3>
             <p>${a.year} Graduate</p>
-            <p>${a.dept} Dept • ${a.domain}</p>
+            <p>${a.dept} • ${a.domain}</p>
             <p>${"⭐".repeat(a.rating)}</p>
-            <button class="primary" onclick="openChat('${a.name}')">Connect</button>
+            <button onclick="openChat('${a.name}')">Connect</button>
           </div>`;
         list.innerHTML += html;
         grid.innerHTML += html;
@@ -313,31 +222,15 @@
     }
     renderAlumni(alumniData);
 
-    // Filter logic
-    function filterAlumni(){
-      const search = document.getElementById("searchInput").value.toLowerCase();
-      const dept = document.getElementById("deptFilter").value;
-      const year = document.getElementById("yearFilter").value;
-      const domain = document.getElementById("domainFilter").value;
-
-      const filtered = alumniData.filter(a =>
-        (a.name.toLowerCase().includes(search) || a.domain.toLowerCase().includes(search)) &&
-        (dept === "" || a.dept === dept) &&
-        (year === "" || a.year == year) &&
-        (domain === "" || a.domain === domain)
-      );
-      renderAlumni(filtered);
-    }
-
-    // Chat feature
     function openChat(name){
       document.getElementById("chatBox").style.display = "block";
-      document.getElementById("chatBody").innerHTML = <b>Chat started with ${name}</b>;
+      document.getElementById("chatBody").innerHTML = `<b>Chat started with ${name}</b>`;
     }
+
     function sendMessage(){
       const input = document.getElementById("chatInput");
       if(input.value.trim() !== ""){
-        document.getElementById("chatBody").innerHTML += <br>You: ${input.value};
+        document.getElementById("chatBody").innerHTML += `<br>You: ${input.value}`;
         input.value = "";
       }
     }
