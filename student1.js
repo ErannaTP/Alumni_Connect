@@ -982,4 +982,5 @@ function RightPanel({ session, setNotice, setError }) {
       </div>
     </div>
   );
+
 }
