@@ -3,2606 +3,842 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KLE Alumni Connect - Admin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Alumni Setu - Connect & Mentor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            background-attachment: fixed;
-            color: #1a202c;
-            min-height: 100vh;
-            visibility: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f6f5;
         }
-
-        body.loaded {
-            visibility: visible;
+        .sidebar {
+            transition: all 0.3s ease;
+            background-color: #ffffff;
         }
-
-        /* Modern Header */
-        .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            color: #1a202c;
-            padding: 1rem 2rem;
+        .post-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .post-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        .active-nav {
+            background-color: #e0f2fe;
+            color: #1e3a8a;
+        }
+        .nav-button:hover {
+            background-color: #e0f2fe;
+        }
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+        }
+        .notification-bell::after {
+            content: attr(data-count);
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #dc2626;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+        .domain-tag {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .domain-tag.hiring {
+            background-color: #fef3c7;
+            color: #b45309;
+        }
+        .domain-tag.general {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .domain-tag.domain {
+            background-color: #e0e7ff;
+            color: #1e3a8a;
+        }
+        .domain-tag.recommended {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .hashtag {
+            background-color: #e0f2fe;
+            color: #1e3a8a;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 6px;
+            cursor: pointer;
+        }
+        .hashtag:hover {
+            background-color: #bae6fd;
+        }
+        .user-badge {
+            background-color: #fef3c7;
+            color: #b45309;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .alumni-answer {
+            background-color: #e0f2fe;
+            border-left: 4px solid #1e3a8a;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+        }
+        .student-answer {
+            background-color: #f8fafc;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+        }
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #1e3a8a;
+        }
+        .appreciated {
+            color: #dc2626;
+        }
+        textarea {
+            resize: none;
+        }
+        #profile-bio, #profile-achievements {
+            height: auto;
+            min-height: 80px;
+        }
+        .post-upload-section, .profile-section, .messages-section {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        .button-primary {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+        .button-primary:hover {
+            background-color: #1e40af;
+        }
+        .button-secondary {
+            background-color: #6b7280;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+        .button-secondary:hover {
+            background-color: #4b5563;
+        }
+        .domain-checkbox-container {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background-color: #f9fafb;
+        }
+        .domain-checkbox {
+            transition: all 0.2s ease;
+        }
+        .domain-checkbox-label {
+            display: flex;
+            align-items: center;
+            padding: 6px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .domain-checkbox-label:hover {
+            background-color: #e0f2fe;
+        }
+        .domain-checkbox:checked + .domain-checkbox-label {
+            background-color: #e0f2fe;
+            color: #1e3a8a;
+        }
+        #notification-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        .popup-header {
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
         }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .header h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .admin-badge {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.5rem 1rem;
-            background: rgba(102, 126, 234, 0.1);
-            border-radius: 30px;
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-
-        .logout-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 0.5rem 1.5rem;
-            border: none;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.875rem;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        /* Login Page */
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: linear-gradient(135deg, #1e40af, #3b82f6);
-        }
-
-        .login-box {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .login-box h2 {
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            color: #1e40af;
-        }
-
-        .login-box input {
-            width: 100%;
-            padding: 0.75rem;
-            margin-bottom: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-
-        .login-box button {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: #1e40af;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .login-box button:hover {
-            background-color: #3b82f6;
-        }
-
-        .error {
-            color: #ef4444;
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        /* Modern Dashboard */
-        .dashboard {
-            display: flex;
-            min-height: 100vh;
-            margin-top: 64px;
-        }
-
-        .sidebar {
-            width: 280px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 2rem 1rem;
-            position: fixed;
-            height: calc(100vh - 64px);
-            overflow-y: auto;
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
-            border-right: 1px solid rgba(102, 126, 234, 0.1);
-        }
-
-        .sidebar::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .sidebar::-webkit-scrollbar-track {
-            background: rgba(102, 126, 234, 0.05);
-        }
-
-        .sidebar::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
-        }
-
-        .sidebar h2 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            color: #1a202c;
-            padding: 0 0.75rem;
-        }
-
-        .nav-section {
-            margin-bottom: 1.5rem;
-        }
-
-        .nav-section-title {
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: #718096;
-            letter-spacing: 1px;
-            padding: 0 0.75rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            color: #4a5568;
-            text-decoration: none;
-            padding: 0.875rem 0.75rem;
-            margin-bottom: 0.25rem;
-            border-radius: 12px;
-            font-weight: 500;
-            font-size: 0.9375rem;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .sidebar a i {
-            width: 20px;
-            text-align: center;
-            font-size: 1.125rem;
-        }
-
-        .sidebar a:hover {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            color: #667eea;
-            transform: translateX(4px);
-        }
-
-        .sidebar a.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .sidebar a.active:hover {
-            transform: translateX(0);
-        }
-
-        .content {
-            flex: 1;
-            margin-left: 280px;
-            padding: 2.5rem;
-            background: transparent;
-        }
-
-        .page-header {
-            margin-bottom: 2rem;
-        }
-
-        .page-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .page-subtitle {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            margin-bottom: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .card h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: #1a202c;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .card h2 i {
-            color: #667eea;
-        }
-
-        .stat-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1.75rem;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.2);
-        }
-
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .stat-icon.purple {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
-            color: #667eea;
-        }
-
-        .stat-icon.green {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.15) 100%);
-            color: #10b981;
-        }
-
-        .stat-icon.orange {
-            background: linear-gradient(135deg, rgba(251, 146, 60, 0.15) 0%, rgba(249, 115, 22, 0.15) 100%);
-            color: #fb923c;
-        }
-
-        .stat-icon.red {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.15) 100%);
-            color: #ef4444;
-        }
-
-        .stat-value {
-            font-size: 2.25rem;
-            font-weight: 800;
-            color: #1a202c;
-            margin-bottom: 0.25rem;
-        }
-
-        .stat-label {
-            color: #718096;
-            font-size: 0.9375rem;
-            font-weight: 500;
-        }
-
-        .stat-change {
-            margin-top: 0.75rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-
-        .stat-change.positive {
-            color: #10b981;
-        }
-
-        .stat-change.negative {
-            color: #ef4444;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-
-        .form-group button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 0.875rem 2rem;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9375rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .form-group button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .form-group button:active {
-            transform: translateY(0);
-        }
-
-        .btn-secondary {
-            background: #e2e8f0 !important;
-            color: #4a5568 !important;
-            box-shadow: none !important;
-        }
-
-        .btn-secondary:hover {
-            background: #cbd5e0 !important;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3) !important;
-        }
-
-        .btn-danger:hover {
-            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4) !important;
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
-        }
-
-        .btn-success:hover {
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4) !important;
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 1rem;
-        }
-
-        .table th,
-        .table td {
-            padding: 1rem 0.75rem;
-            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-            text-align: left;
-        }
-
-        .table thead {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            border-radius: 12px 12px 0 0;
-        }
-
-        .table th {
-            color: #1a202c;
-            font-weight: 600;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border: none;
-        }
-
-        .table tbody tr {
-            transition: all 0.2s ease;
-        }
-
-        .table tbody tr:hover {
-            background: rgba(102, 126, 234, 0.05);
-        }
-
-        .table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .table-actions {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .table-actions button {
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-            border-radius: 8px;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.375rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .badge.success {
-            background: rgba(16, 185, 129, 0.15);
-            color: #059669;
-        }
-
-        .badge.warning {
-            background: rgba(251, 146, 60, 0.15);
-            color: #ea580c;
-        }
-
-        .badge.danger {
-            background: rgba(239, 68, 68, 0.15);
-            color: #dc2626;
-        }
-
-        .badge.info {
-            background: rgba(102, 126, 234, 0.15);
-            color: #667eea;
-        }
-
-        .chart-container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .dashboard {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: static;
-            }
-
-            .content {
-                margin-left: 0;
-                padding: 1rem;
-            }
-        }
-
-        /* Loading Screen */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Modal Styles */
-        .modal-overlay {
+        #notification-overlay {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal-overlay.show {
-            display: flex;
-        }
-
-        .modal-container {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            max-width: 700px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1a202c;
-            margin: 0;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #718096;
-            cursor: pointer;
-            transition: color 0.3s ease;
-            padding: 0.5rem;
-            line-height: 1;
-        }
-
-        .modal-close:hover {
-            color: #ef4444;
-        }
-
-        .modal-body {
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-            padding-top: 1rem;
-            border-top: 2px solid #e2e8f0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
         }
     </style>
 </head>
-<body>
-    <!-- Loading Screen -->
-    <div class="loading-screen" id="loading-screen">
-        <div class="loading-spinner"></div>
-    </div>
-
-    <!-- Header -->
-    <div class="header">
-        <div class="header-left">
-            <h1>KLE Alumni Connect</h1>
-            <span class="admin-badge">Admin Panel</span>
-        </div>
-        <div class="header-right">
-            <div class="user-info">
-                <div class="user-avatar">A</div>
-                <span style="font-weight: 600; color: #1a202c;">Admin User</span>
-            </div>
-            <button class="logout-btn" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i> Logout
+<body class="min-h-screen flex">
+    <!-- Sidebar -->
+    <div class="sidebar w-64 bg-white shadow-lg p-6 flex flex-col gap-4">
+        <div class="text-2xl font-bold text-indigo-900">Alumni Setu</div>
+        <nav class="flex flex-col gap-2">
+            <button class="nav-button flex items-center gap-2 p-3 rounded-lg text-gray-700 active-nav" onclick="showSection('feed')">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Home
             </button>
+            <button class="nav-button flex items-center gap-2 p-3 rounded-lg text-gray-700" onclick="showSection('profile')">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Profile
+            </button>
+            <button class="nav-button flex items-center gap-2 p-3 rounded-lg text-gray-700" onclick="showSection('messages')">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Messages
+            </button>
+        </nav>
+        <div class="mt-4">
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Popular Hashtags</h3>
+            <div class="flex flex-wrap gap-2">
+                <span class="hashtag" onclick="searchByHashtag('#Tech')">#Tech</span>
+                <span class="hashtag" onclick="searchByHashtag('#Mentorship')">#Mentorship</span>
+                <span class="hashtag" onclick="searchByHashtag('#Career')">#Career</span>
+                <span class="hashtag" onclick="searchByHashtag('#Innovation')">#Innovation</span>
+                <span class="hashtag" onclick="searchByHashtag('#Coding')">#Coding</span>
+                <span class="hashtag" onclick="searchByHashtag('#TechTrends')">#TechTrends</span>
+                <span class="hashtag" onclick="searchByHashtag('#Learning')">#Learning</span>
+            </div>
         </div>
     </div>
 
-    <!-- Login Page -->
-    <div id="login" class="login-container">
-        <div class="login-box">
-            <h2>Admin Login</h2>
-            <div id="error" class="error"></div>
-            <form onsubmit="handleLogin(event)">
-                <input type="email" id="email" placeholder="Email" required>
-                <input type="password" id="password" placeholder="Password" required>
-                <button type="submit">Login</button>
-            </form>
-        </div>
-    </div>
+    <!-- Main Content -->
+    <div class="flex-1 p-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header with Search and Notifications -->
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-3xl font-bold text-indigo-900">Alumni Setu Community</h1>
+                <div class="flex gap-4">
+                    <input type="text" id="searchBar" placeholder="Search posts or hashtags..." class="p-2 border border-gray-300 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500" oninput="searchPosts()">
+                    <div class="notification-bell" data-count="3" onclick="toggleNotificationPopup()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V5a3 3 0 00-6 0v.083A6 6 0 002 11v3.159c0 .538-.214 1.055-.595 1.436L0 17h5m10 0v1a3 3 0 01-6 0v-1m6 0H9" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
 
-    <!-- Dashboard -->
-    <div id="dashboard" class="dashboard" style="display: none;">
-        <div class="sidebar">
-            <h2>Navigation</h2>
-            
-            <div class="nav-section">
-                <div class="nav-section-title">Overview</div>
-                <a href="#" class="active" onclick="showSection('dashboard-home')">
-                    <i class="fas fa-chart-line"></i> Dashboard
-                </a>
-                <a href="#" onclick="showSection('view-analytics')">
-                    <i class="fas fa-chart-bar"></i> Analytics
-                </a>
-            </div>
-            
-            <div class="nav-section">
-                <div class="nav-section-title">Management</div>
-                <a href="#" onclick="showSection('manage-profiles')">
-                    <i class="fas fa-users"></i> Manage Profiles
-                </a>
-                <a href="#" onclick="showSection('manage-events')">
-                    <i class="fas fa-calendar-alt"></i> Manage Events
-                </a>
-                <a href="#" onclick="showSection('manage-chapters')">
-                    <i class="fas fa-building"></i> Manage Chapters
-                </a>
-                <a href="#" onclick="showSection('manage-mentorship')">
-                    <i class="fas fa-handshake"></i> Mentorship
-                </a>
-            </div>
-            
-            <div class="nav-section">
-                <div class="nav-section-title">Communication</div>
-                <a href="#" onclick="showSection('send-messages')">
-                    <i class="fas fa-envelope"></i> Send Messages
-                </a>
-                <a href="#" onclick="showSection('moderate-content')">
-                    <i class="fas fa-shield-alt"></i> Moderate Content
-                </a>
-            </div>
-            
-            <div class="nav-section">
-                <div class="nav-section-title">System</div>
-                <a href="#" onclick="showSection('manage-roles')">
-                    <i class="fas fa-user-shield"></i> Manage Roles
-                </a>
-                <a href="#" onclick="showSection('system-integration')">
-                    <i class="fas fa-cogs"></i> System Integration
-                </a>
-            </div>
-        </div>
-        <div class="content">
-            <!-- Dashboard Home -->
-            <div id="dashboard-home" class="card">
-                <div class="page-header">
-                    <h1 class="page-title">Dashboard Overview</h1>
-                    <p class="page-subtitle">Welcome back! Here's what's happening with your alumni network today.</p>
+            <!-- Notification Popup -->
+            <div id="notification-overlay"></div>
+            <div id="notification-popup">
+                <div class="popup-header">
+                    <h3 class="text-lg font-semibold text-gray-800">Notifications</h3>
+                    <button class="text-gray-600 hover:text-gray-800" onclick="toggleNotificationPopup()">✖</button>
                 </div>
-                
-                <div class="stat-cards">
-                    <div class="stat-card">
-                        <div class="stat-icon purple">
-                            <i class="fas fa-user-graduate"></i>
-                        </div>
-                        <div class="stat-value">1,247</div>
-                        <div class="stat-label">Total Alumni</div>
-                        <div class="stat-change positive">
-                            <i class="fas fa-arrow-up"></i> 12% from last month
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon green">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-value">938</div>
-                        <div class="stat-label">Active Users</div>
-                        <div class="stat-change positive">
-                            <i class="fas fa-arrow-up"></i> 75% engagement rate
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon orange">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div class="stat-value">24</div>
-                        <div class="stat-label">Events This Month</div>
-                        <div class="stat-change positive">
-                            <i class="fas fa-arrow-up"></i> 120 attendees avg
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon red">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </div>
-                        <div class="stat-value">8</div>
-                        <div class="stat-label">Pending Approvals</div>
-                        <div class="stat-change">
-                            <i class="fas fa-clock"></i> Needs attention
-                        </div>
+                <div id="notifications-container" class="p-4 space-y-4"></div>
+                <div class="p-4 border-t border-gray-200">
+                    <button class="button-primary w-full" onclick="clearNotifications()">Clear All Notifications</button>
+                </div>
+            </div>
+
+            <!-- Feed Section -->
+            <div id="feed" class="section">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <label class="text-gray-700 font-medium">Filter by Domain:</label>
+                        <select id="domainFilter" class="ml-2 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" onchange="filterPosts()">
+                            <option value="None">All Domains</option>
+                            <option value="Cybersecurity">Cybersecurity</option>
+                            <option value="Data Science">Data Science</option>
+                            <option value="Artificial Intelligence">Artificial Intelligence</option>
+                            <option value="Software Engineering">Software Engineering</option>
+                            <option value="Machine Learning">Machine Learning</option>
+                            <option value="Database Systems">Database Systems</option>
+                            <option value="Web Development">Web Development</option>
+                            <option value="Mobile App Development">Mobile App Development</option>
+                            <option value="Cloud Computing">Cloud Computing</option>
+                            <option value="Networking">Networking</option>
+                            <option value="General">General</option>
+                            <option value="Success Story">Success Story</option>
+                            <option value="New Hiring Opportunity">New Hiring Opportunity</option>
+                        </select>
                     </div>
                 </div>
-                
-                <div class="card">
-                    <h2><i class="fas fa-chart-pie"></i> Quick Stats</h2>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+
+                <!-- Post Upload Form -->
+                <div class="post-upload-section p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Share Your Insights</h3>
+                    <input id="postTitle" type="text" class="w-full p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Post Title">
+                    <textarea id="postContent" class="w-full p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Write your post..." rows="4"></textarea>
+                    <div class="flex flex-wrap gap-4 mb-4">
+                        <input id="postHashtags" type="text" class="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Add hashtags (e.g., #CloudSecurity #Mentorship)">
+                        <select id="postDomain" class="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="">Select Domain</option>
+                            <option value="Cybersecurity">Cybersecurity</option>
+                            <option value="Data Science">Data Science</option>
+                            <option value="Artificial Intelligence">Artificial Intelligence</option>
+                            <option value="Software Engineering">Software Engineering</option>
+                            <option value="Machine Learning">Machine Learning</option>
+                            <option value="Database Systems">Database Systems</option>
+                            <option value="Web Development">Web Development</option>
+                            <option value="Mobile App Development">Mobile App Development</option>
+                            <option value="Cloud Computing">Cloud Computing</option>
+                            <option value="Networking">Networking</option>
+                            <option value="General">General</option>
+                            <option value="Success Story">Success Story</option>
+                            <option value="New Hiring Opportunity">New Hiring Opportunity</option>
+                        </select>
+                        <input id="postImage" type="file" accept="image/*" class="p-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <button class="button-primary" onclick="uploadPost()">Share Post</button>
+                </div>
+
+                <!-- Feed -->
+                <div id="postFeed" class="space-y-6"></div>
+                <div id="loading">Loading more posts...</div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile" class="section hidden">
+                <h2 class="text-2xl font-bold text-indigo-900 mb-6">Your Profile</h2>
+                <div class="profile-section p-6">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-900 text-2xl font-medium">SP</div>
                         <div>
-                            <div style="font-size: 0.875rem; color: #718096; margin-bottom: 0.5rem; font-weight: 600;">Alumni Engagement</div>
-                            <div style="display: flex; align-items: baseline; gap: 0.5rem;">
-                                <div style="font-size: 2rem; font-weight: 800; color: #1a202c;">75%</div>
-                                <div style="color: #10b981; font-weight: 600; font-size: 0.875rem;">↑ 5%</div>
-                            </div>
-                            <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; margin-top: 0.75rem; overflow: hidden;">
-                                <div style="width: 75%; height: 100%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);"></div>
-                            </div>
+                            <div class="font-semibold text-gray-800 text-xl" id="profile-name-display">Saavan Patel <span class="user-badge ml-2">Alumni</span></div>
+                            <div class="text-sm text-gray-500" id="profile-domains"></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 gap-4">
+                        <div>
+                            <label class="text-gray-700 font-medium">Name:</label>
+                            <input id="profile-name" type="text" value="Saavan Patel" class="w-full p-2 border border-gray-300 rounded-lg mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500" disabled>
                         </div>
                         <div>
-                            <div style="font-size: 0.875rem; color: #718096; margin-bottom: 0.5rem; font-weight: 600;">Event Participation</div>
-                            <div style="display: flex; align-items: baseline; gap: 0.5rem;">
-                                <div style="font-size: 2rem; font-weight: 800; color: #1a202c;">68%</div>
-                                <div style="color: #10b981; font-weight: 600; font-size: 0.875rem;">↑ 8%</div>
-                            </div>
-                            <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; margin-top: 0.75rem; overflow: hidden;">
-                                <div style="width: 68%; height: 100%; background: linear-gradient(90deg, #10b981 0%, #059669 100%);"></div>
+                            <label class="text-gray-700 font-medium">Domains:</label>
+                            <div id="profile-domains-checkboxes" class="domain-checkbox-container mt-1">
+                                <label class="domain-checkbox-label"><input type="checkbox" name="profile-domains" value="Cybersecurity" class="domain-checkbox mr-2" disabled>Cybersecurity</label>
+                                <label class="domain-checkbox-label"><input type="checkbox" name="profile-domains" value="Data Science" class="domain-checkbox mr-2" disabled>Data Science</label>
+                                <label class="domain-checkbox-label"><input type="checkbox" name="profile-domains" value="Artificial Intelligence" class="domain-checkbox mr-2" disabled>Artificial Intelligence</label>
+                                <label class="domain-checkbox-label"><input type="checkbox" name="profile-domains" value="Software Engineering" class="domain-checkbox mr-2" disabled>Software Engineering</label>
+                                <label class="domain-checkbox-label"><input type="checkbox" name="profile-domains" value="Machine Learning" class="domain-checkbox mr-2" disabled>Machine Learning</label>
+                                <label class="domain-checkbox-label"><input type="checkbox" name="profile-domains" value="Database Systems" class="domain-checkbox mr-2" disabled>Database Systems</label>
+                                <label class="domain-checkbox-label"><input type="checkbox" name="profile-domains" value="Web Development" class="domain-checkbox mr-2" disabled>Web Development</label>
+                                <label class="domain-checkbox-label"><input type="checkbox" name="profile-domains" value="Mobile App Development" class="domain-checkbox mr-2" disabled>Mobile App Development</label>
+                                <label class="domain-checkbox-label"><input type="checkbox" name="profile-domains" value="Cloud Computing" class="domain-checkbox mr-2" disabled>Cloud Computing</label>
+                                <label class="domain-checkbox-label"><input type="checkbox" name="profile-domains" value="Networking" class="domain-checkbox mr-2" disabled>Networking</label>
+                                <label class="domain-checkbox-label"><input type="checkbox" name="profile-domains" value="General" class="domain-checkbox mr-2" disabled>General</label>
+                                <label class="domain-checkbox-label"><input type="checkbox" name="profile-domains" value="Success Story" class="domain-checkbox mr-2" disabled>Success Story</label>
+                                <label class="domain-checkbox-label"><input type="checkbox" name="profile-domains" value="New Hiring Opportunity" class="domain-checkbox mr-2" disabled>New Hiring Opportunity</label>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Manage Alumni Profiles -->
-            <div id="manage-profiles" class="card" style="display: none;">
-                <div class="page-header" style="margin-bottom: 2rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                         <div>
-                            <h1 class="page-title" style="margin: 0;"><i class="fas fa-users"></i> Alumni Profile Management</h1>
-                            <p class="page-subtitle" style="margin: 0.5rem 0 0;">Comprehensive alumni records management system</p>
+                            <label class="text-gray-700 font-medium">Bio:</label>
+                            <textarea id="profile-bio" class="w-full p-2 border border-gray-300 rounded-lg mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500" rows="3" disabled>Senior Cybersecurity Analyst at SecureNet Inc. with 12 years of experience in cloud security, ethical hacking, and threat analysis. Passionate about mentoring students and sharing industry insights.</textarea>
                         </div>
-                        <div style="display: flex; gap: 1rem;">
-                            <button onclick="showAddAlumniModal()" class="btn-success" style="padding: 0.75rem 1.5rem;">
-                                <i class="fas fa-user-plus"></i> Add New Alumni
-                            </button>
-                            <button onclick="detectDuplicates()" class="btn-secondary" style="padding: 0.75rem 1.5rem;">
-                                <i class="fas fa-copy"></i> Detect Duplicates
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Search and Filter Bar -->
-                <div style="background: rgba(102, 126, 234, 0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
-                        <div class="form-group" style="margin: 0;">
-                            <label style="font-size: 0.875rem;"><i class="fas fa-search"></i> Search</label>
-                            <input type="text" id="searchInput" placeholder="Search by name, email, or enrollment..." 
-                                   onkeyup="filterAlumni()" style="border: 2px solid #e2e8f0; border-radius: 8px; padding: 0.75rem;">
-                        </div>
-                        <div class="form-group" style="margin: 0;">
-                            <label style="font-size: 0.875rem;"><i class="fas fa-graduation-cap"></i> Department</label>
-                            <select id="filterDepartment" onchange="filterAlumni()" style="border: 2px solid #e2e8f0; border-radius: 8px; padding: 0.75rem;">
-                                <option value="">All Departments</option>
-                                <option value="Computer Science">Computer Science</option>
-                                <option value="Information Technology">Information Technology</option>
-                                <option value="Electronics">Electronics</option>
-                                <option value="Mechanical">Mechanical</option>
-                                <option value="Civil">Civil</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="margin: 0;">
-                            <label style="font-size: 0.875rem;"><i class="fas fa-calendar"></i> Graduation Year</label>
-                            <select id="filterYear" onchange="filterAlumni()" style="border: 2px solid #e2e8f0; border-radius: 8px; padding: 0.75rem;">
-                                <option value="">All Years</option>
-                                <option value="2024">2024</option>
-                                <option value="2023">2023</option>
-                                <option value="2022">2022</option>
-                                <option value="2021">2021</option>
-                                <option value="2020">2020</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="margin: 0;">
-                            <label style="font-size: 0.875rem;"><i class="fas fa-map-marker-alt"></i> Location</label>
-                            <input type="text" id="filterLocation" placeholder="Filter by city..." 
-                                   onkeyup="filterAlumni()" style="border: 2px solid #e2e8f0; border-radius: 8px; padding: 0.75rem;">
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button onclick="clearFilters()" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
-                            <i class="fas fa-redo"></i> Clear Filters
-                        </button>
-                        <button onclick="exportAlumniData()" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
-                            <i class="fas fa-download"></i> Export Data
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Alumni Table -->
-                <div style="overflow-x: auto;">
-                    <table class="table" id="alumniTable">
-                        <thead>
-                            <tr>
-                                <th style="width: 50px;">
-                                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" style="cursor: pointer;">
-                                </th>
-                                <th>Profile</th>
-                                <th>Contact</th>
-                                <th>Education</th>
-                                <th>Current Status</th>
-                                <th>Location</th>
-                                <th style="width: 150px;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="alumniTableBody">
-                            <!-- Alumni data will be populated here -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pagination -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid #e2e8f0;">
-                    <div style="color: #718096; font-size: 0.875rem;">
-                        Showing <span id="showingCount">0</span> of <span id="totalCount">0</span> alumni
-                    </div>
-                    <div id="pagination" style="display: flex; gap: 0.5rem;">
-                        <!-- Pagination buttons will be added here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Manage Events -->
-            <div id="manage-events" class="card" style="display: none;">
-                <div class="page-header" style="margin-bottom: 2rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                         <div>
-                            <h1 class="page-title" style="margin: 0;"><i class="fas fa-calendar-alt"></i> Event Management</h1>
-                            <p class="page-subtitle" style="margin: 0.5rem 0 0;">Plan, organize, and track alumni events</p>
+                            <label class="text-gray-700 font-medium">Achievements:</label>
+                            <textarea id="profile-achievements" class="w-full p-2 border border-gray-300 rounded-lg mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500" rows="4" disabled>Certified Ethical Hacker (CEH), 2018
+Published 5 papers on cloud security, 2019-2024
+Mentored 50+ students in cybersecurity careers
+Keynote speaker at CyberSec Summit 2024</textarea>
                         </div>
-                        <button onclick="showAddEventModal()" class="btn-success" style="padding: 0.75rem 1.5rem;">
-                            <i class="fas fa-plus-circle"></i> Create New Event
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Event Analytics Cards -->
-                <div class="stat-cards" style="margin-bottom: 2rem;">
-                    <div class="stat-card">
-                        <div class="stat-icon purple">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div class="stat-value" id="totalEventsCount">0</div>
-                        <div class="stat-label">Total Events</div>
-                        <div class="stat-change positive">
-                            <i class="fas fa-arrow-up"></i> <span id="upcomingEventsCount">0</span> upcoming
+                        <div>
+                            <label class="text-gray-700 font-medium">Skills:</label>
+                            <input id="profile-skills" type="text" value="Cloud Security, Penetration Testing, Threat Analysis, Cryptography" class="w-full p-2 border border-gray-300 rounded-lg mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-500" disabled>
                         </div>
                     </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon green">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-value" id="totalParticipantsCount">0</div>
-                        <div class="stat-label">Total Registrations</div>
-                        <div class="stat-change positive">
-                            <i class="fas fa-chart-line"></i> Across all events
-                        </div>
+                    <div class="mt-6 flex gap-4">
+                        <button id="edit-profile-btn" class="button-primary" onclick="toggleEditProfile()">Edit Profile</button>
+                        <button id="save-profile-btn" class="button-primary hidden" onclick="saveProfile()">Save Profile</button>
                     </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon orange">
-                            <i class="fas fa-percentage"></i>
-                        </div>
-                        <div class="stat-value" id="avgAttendanceRate">0%</div>
-                        <div class="stat-label">Avg Attendance Rate</div>
-                        <div class="stat-change">
-                            <i class="fas fa-info-circle"></i> Based on past events
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon red">
-                            <i class="fas fa-trophy"></i>
-                        </div>
-                        <div class="stat-value" id="mostPopularType">-</div>
-                        <div class="stat-label">Most Popular Type</div>
-                        <div class="stat-change">
-                            <i class="fas fa-star"></i> By registrations
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Filter Bar -->
-                <div style="background: rgba(102, 126, 234, 0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                        <div class="form-group" style="margin: 0;">
-                            <label style="font-size: 0.875rem;"><i class="fas fa-search"></i> Search Events</label>
-                            <input type="text" id="searchEvents" placeholder="Search by title..." 
-                                   onkeyup="filterEvents()" style="border: 2px solid #e2e8f0; border-radius: 8px; padding: 0.75rem;">
-                        </div>
-                        <div class="form-group" style="margin: 0;">
-                            <label style="font-size: 0.875rem;"><i class="fas fa-filter"></i> Event Type</label>
-                            <select id="filterEventType" onchange="filterEvents()" style="border: 2px solid #e2e8f0; border-radius: 8px; padding: 0.75rem;">
-                                <option value="">All Types</option>
-                                <option value="reunion">Alumni Reunion</option>
-                                <option value="webinar">Webinar</option>
-                                <option value="workshop">Workshop</option>
-                                <option value="seminar">Seminar</option>
-                                <option value="networking">Networking Event</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="margin: 0;">
-                            <label style="font-size: 0.875rem;"><i class="fas fa-clock"></i> Status</label>
-                            <select id="filterEventStatus" onchange="filterEvents()" style="border: 2px solid #e2e8f0; border-radius: 8px; padding: 0.75rem;">
-                                <option value="">All Status</option>
-                                <option value="upcoming">Upcoming</option>
-                                <option value="ongoing">Ongoing</option>
-                                <option value="completed">Completed</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Events Table -->
-                <div style="overflow-x: auto;">
-                    <table class="table" id="eventsTable">
-                        <thead>
-                            <tr>
-                                <th>Event Details</th>
-                                <th>Date & Time</th>
-                                <th>Type</th>
-                                <th>Registrations</th>
-                                <th>Attendance</th>
-                                <th>Status</th>
-                                <th style="width: 180px;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="eventsTableBody">
-                            <!-- Events data will be populated here -->
-                        </tbody>
-                    </table>
                 </div>
             </div>
 
-            <!-- Send Messages -->
-            <div id="send-messages" class="card" style="display: none;">
-                <h2>Send Messages</h2>
-                <form onsubmit="alert('Message sent!'); return false;">
-                    <div class="form-group">
-                        <label>Recipients</label>
-                        <select multiple required>
-                            <option value="all">All Alumni</option>
-                            <option value="cs">Computer Science</option>
-                            <option value="mech">Mechanical</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Message Type</label>
-                        <select required>
-                            <option value="email">Email</option>
-                            <option value="sms">SMS</option>
-                            <option value="notification">Notification</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Content</label>
-                        <textarea placeholder="Enter message" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit">Send Message</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Manage Chapters -->
-            <div id="manage-chapters" class="card" style="display: none;">
-                <h2>Manage Chapters</h2>
-                <form onsubmit="alert('Chapter created!'); return false;">
-                    <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" placeholder="Enter chapter name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Region</label>
-                        <input type="text" placeholder="Enter region" required>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit">Create Chapter</button>
-                    </div>
-                </form>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Region</th>
-                            <th>Members</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>CS Chapter</td>
-                            <td>Hubli</td>
-                            <td>30</td>
-                            <td>
-                                <button onclick="alert('Chapter edited!')">Edit</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Moderate Content -->
-            <div id="moderate-content" class="card" style="display: none;">
-                <h2><i class="fas fa-shield-alt"></i> Moderate Content</h2>
-                <p style="color: #718096; margin-bottom: 2rem;">Review and moderate user-generated content.</p>
-                
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Content</th>
-                            <th>Type</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">S</div>
-                                    <strong>Sunil Patil</strong>
-                                </div>
-                            </td>
-                            <td>Great event! Looking forward to more...</td>
-                            <td><span class="badge info">Post</span></td>
-                            <td><span class="badge warning">Pending</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button onclick="alert('Content approved!')" class="btn-success"><i class="fas fa-check"></i> Approve</button>
-                                    <button onclick="alert('Content rejected!')" class="btn-danger"><i class="fas fa-times"></i> Reject</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #10b981 0%, #059669 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">P</div>
-                                    <strong>Priya Sharma</strong>
-                                </div>
-                            </td>
-                            <td>Interested in mentoring students...</td>
-                            <td><span class="badge info">Comment</span></td>
-                            <td><span class="badge warning">Pending</span></td>
-                            <td>
-                                <div class="table-actions">
-                                    <button onclick="alert('Content approved!')" class="btn-success"><i class="fas fa-check"></i> Approve</button>
-                                    <button onclick="alert('Content rejected!')" class="btn-danger"><i class="fas fa-times"></i> Reject</button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Manage Mentorship -->
-            <div id="manage-mentorship" class="card" style="display: none;">
-                <h2>Manage Mentorship</h2>
-                <form onsubmit="alert('Mentorship assigned!'); return false;">
-                    <div class="form-group">
-                        <label>Mentor</label>
-                        <select required>
-                            <option value="john">Rahul</option>
-                            <option value="jane">Sumit</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Mentee</label>
-                        <select required>
-                            <option value="alice">Sumanth</option>
-                            <option value="bob">Sanjay</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit">Assign Mentorship</button>
-                    </div>
-                </form>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Mentor</th>
-                            <th>Mentee</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Anil</td>
-                            <td>Sunil</td>
-                            <td>Active</td>
-                            <td>
-                                <button onclick="alert('Session tracked!')">Track Session</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- View Analytics -->
-            <div id="view-analytics" class="card" style="display: none;">
-                <h2>View Analytics</h2>
-                <div class="chart-container">
-                    <canvas id="engagementChart"></canvas>
-                </div>
-                <button onclick="alert('Report exported!')">Export Report</button>
-            </div>
-
-            <!-- Manage Roles -->
-            <div id="manage-roles" class="card" style="display: none;">
-                <h2>Manage Roles</h2>
-                <form onsubmit="alert('Role assigned!'); return false;">
-                    <div class="form-group">
-                        <label>User</label>
-                        <select required>
-                            <option value="john">Sagar</option>
-                            <option value="jane">Roy</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Role</label>
-                        <select required>
-                            <option value="admin">Admin</option>
-                            <option value="moderator">Moderator</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit">Assign Role</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- System Integration -->
-            <div id="system-integration" class="card" style="display: none;">
-                <h2>System Integration</h2>
-                <p>Connected to university systems. Last backup: 2025-10-27</p>
-                <button onclick="alert('Backup initiated!')">Run Backup</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add/Edit Alumni Modal -->
-    <div class="modal-overlay" id="alumniModal">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle"><i class="fas fa-user-plus"></i> Add New Alumni</h3>
-                <button class="modal-close" onclick="closeAlumniModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="alumniForm" onsubmit="saveAlumni(event)">
-                    <input type="hidden" id="alumniId">
-                    
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem;">
-                        <div class="form-group">
-                            <label><i class="fas fa-user"></i> Full Name *</label>
-                            <input type="text" id="alumniName" placeholder="Enter full name" required 
-                                   style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-envelope"></i> Email Address *</label>
-                            <input type="email" id="alumniEmail" placeholder="email@example.com" required 
-                                   style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                        </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem;">
-                        <div class="form-group">
-                            <label><i class="fas fa-phone"></i> Phone Number</label>
-                            <input type="tel" id="alumniPhone" placeholder="+91 1234567890" 
-                                   style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-id-card"></i> Enrollment Number</label>
-                            <input type="text" id="alumniEnrollment" placeholder="KLE/CS/2020/001" 
-                                   style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                        </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem;">
-                        <div class="form-group">
-                            <label><i class="fas fa-graduation-cap"></i> Department *</label>
-                            <select id="alumniDepartment" required style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                                <option value="">Select Department</option>
-                                <option value="Computer Science">Computer Science</option>
-                                <option value="Information Technology">Information Technology</option>
-                                <option value="Electronics">Electronics & Communication</option>
-                                <option value="Mechanical">Mechanical Engineering</option>
-                                <option value="Civil">Civil Engineering</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-calendar"></i> Graduation Year *</label>
-                            <input type="number" id="alumniYear" placeholder="2024" min="1950" max="2030" required 
-                                   style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                        </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem;">
-                        <div class="form-group">
-                            <label><i class="fas fa-briefcase"></i> Current Company</label>
-                            <input type="text" id="alumniCompany" placeholder="Company name" 
-                                   style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-user-tie"></i> Job Title</label>
-                            <input type="text" id="alumniJobTitle" placeholder="e.g., Software Engineer" 
-                                   style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                        </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem;">
-                        <div class="form-group">
-                            <label><i class="fas fa-map-marker-alt"></i> Location</label>
-                            <input type="text" id="alumniLocation" placeholder="City, Country" 
-                                   style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-linkedin"></i> LinkedIn Profile</label>
-                            <input type="url" id="alumniLinkedIn" placeholder="https://linkedin.com/in/..." 
-                                   style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label><i class="fas fa-trophy"></i> Achievements</label>
-                        <textarea id="alumniAchievements" rows="3" placeholder="Notable achievements, awards, publications..." 
-                                  style="border: 2px solid #e2e8f0; border-radius: 8px;"></textarea>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" onclick="closeAlumniModal()" class="btn-secondary">
-                            <i class="fas fa-times"></i> Cancel
-                        </button>
-                        <button type="submit" class="btn-success">
-                            <i class="fas fa-save"></i> Save Alumni
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Duplicates Detection Modal -->
-    <div class="modal-overlay" id="duplicatesModal">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3 class="modal-title"><i class="fas fa-copy"></i> Duplicate Alumni Detected</h3>
-                <button class="modal-close" onclick="closeDuplicatesModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="duplicatesList"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" onclick="closeDuplicatesModal()" class="btn-secondary">
-                    <i class="fas fa-times"></i> Close
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add/Edit Event Modal -->
-    <div class="modal-overlay" id="eventModal">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3 class="modal-title" id="eventModalTitle"><i class="fas fa-calendar-plus"></i> Add New Event</h3>
-                <button class="modal-close" onclick="closeEventModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="eventForm" onsubmit="saveEvent(event)">
-                    <input type="hidden" id="eventId">
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-heading"></i> Event Title *</label>
-                        <input type="text" id="eventTitle" placeholder="Enter event title" required 
-                               style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem;">
-                        <div class="form-group">
-                            <label><i class="fas fa-tag"></i> Event Type *</label>
-                            <select id="eventType" required style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                                <option value="">Select Type</option>
-                                <option value="reunion">Alumni Reunion</option>
-                                <option value="webinar">Webinar</option>
-                                <option value="workshop">Workshop</option>
-                                <option value="seminar">Seminar</option>
-                                <option value="networking">Networking Event</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-calendar"></i> Event Date *</label>
-                            <input type="date" id="eventDate" required 
-                                   style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                        </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem;">
-                        <div class="form-group">
-                            <label><i class="fas fa-clock"></i> Start Time *</label>
-                            <input type="time" id="eventStartTime" required 
-                                   style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-clock"></i> End Time *</label>
-                            <input type="time" id="eventEndTime" required 
-                                   style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label><i class="fas fa-map-marker-alt"></i> Location/Venue *</label>
-                        <input type="text" id="eventLocation" placeholder="e.g., Main Auditorium or Zoom Link" required 
-                               style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                    </div>
-
-                    <div class="form-group">
-                        <label><i class="fas fa-align-left"></i> Description</label>
-                        <textarea id="eventDescription" rows="4" placeholder="Event description and details..." 
-                                  style="border: 2px solid #e2e8f0; border-radius: 8px;"></textarea>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem;">
-                        <div class="form-group">
-                            <label><i class="fas fa-users"></i> Max Participants</label>
-                            <input type="number" id="eventMaxParticipants" placeholder="e.g., 100" min="1" 
-                                   style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-info-circle"></i> Status *</label>
-                            <select id="eventStatus" required style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                                <option value="upcoming">Upcoming</option>
-                                <option value="ongoing">Ongoing</option>
-                                <option value="completed">Completed</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" onclick="closeEventModal()" class="btn-secondary">
-                            <i class="fas fa-times"></i> Cancel
-                        </button>
-                        <button type="submit" class="btn-success">
-                            <i class="fas fa-save"></i> Save Event
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Manage Participants Modal -->
-    <div class="modal-overlay" id="participantsModal">
-        <div class="modal-container" style="max-width: 900px;">
-            <div class="modal-header">
-                <h3 class="modal-title" id="participantsModalTitle"><i class="fas fa-users"></i> Manage Participants</h3>
-                <button class="modal-close" onclick="closeParticipantsModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div style="margin-bottom: 1.5rem;">
-                    <button onclick="showAddParticipantForm()" class="btn-success" style="padding: 0.6rem 1.25rem;">
-                        <i class="fas fa-user-plus"></i> Add Participant
-                    </button>
-                    <button onclick="sendEventNotifications()" class="btn-primary" style="padding: 0.6rem 1.25rem; margin-left: 0.5rem;">
-                        <i class="fas fa-bell"></i> Send Notifications
-                    </button>
-                </div>
-
-                <!-- Add Participant Form (Initially Hidden) -->
-                <div id="addParticipantForm" style="display: none; background: rgba(102, 126, 234, 0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
-                    <h4 style="margin: 0 0 1rem;"><i class="fas fa-user-plus"></i> Add Participant</h4>
-                    <form onsubmit="addParticipant(event)">
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
-                            <div class="form-group">
-                                <label>Name *</label>
-                                <input type="text" id="participantName" required style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                            </div>
-                            <div class="form-group">
-                                <label>Email *</label>
-                                <input type="email" id="participantEmail" required style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                            </div>
-                            <div class="form-group">
-                                <label>Phone</label>
-                                <input type="tel" id="participantPhone" style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                            </div>
-                            <div class="form-group">
-                                <label>Attended</label>
-                                <select id="participantAttended" style="border: 2px solid #e2e8f0; border-radius: 8px;">
-                                    <option value="pending">Pending</option>
-                                    <option value="yes">Yes</option>
-                                    <option value="no">No</option>
-                                </select>
+            <!-- Messages Section -->
+            <div id="messages" class="section hidden">
+                <h2 class="text-2xl font-bold text-indigo-900 mb-6">Messages</h2>
+                <div class="messages-section p-6">
+                    <div class="flex gap-4">
+                        <div class="w-1/3 border-r border-gray-200 pr-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Conversations</h3>
+                            <div id="conversation-list" class="space-y-2">
+                                <div class="p-2 rounded-lg hover:bg-indigo-50 cursor-pointer" onclick="showConversation('Aarav Sharma')">Aarav Sharma <span class="text-xs text-gray-500">2 hours ago</span></div>
+                                <div class="p-2 rounded-lg hover:bg-indigo-50 cursor-pointer" onclick="showConversation('Sneha Verma')">Sneha Verma <span class="text-xs text-gray-500">5 hours ago</span></div>
+                                <div class="p-2 rounded-lg hover:bg-indigo-50 cursor-pointer" onclick="showConversation('Rohan Gupta')">Rohan Gupta <span class="text-xs text-gray-500">1 day ago</span></div>
                             </div>
                         </div>
-                        <div style="margin-top: 1rem;">
-                            <button type="submit" class="btn-success"><i class="fas fa-check"></i> Add</button>
-                            <button type="button" onclick="hideAddParticipantForm()" class="btn-secondary" style="margin-left: 0.5rem;"><i class="fas fa-times"></i> Cancel</button>
+                        <div class="w-2/3">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4" id="conversation-title">Select a conversation</h3>
+                            <div id="conversation-messages" class="space-y-4 mb-4" style="max-height: 400px; overflow-y: auto;"></div>
+                            <div class="flex gap-2">
+                                <input id="message-input" type="text" class="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Type a message...">
+                                <button class="button-primary" onclick="sendMessage()">Send</button>
+                            </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
-
-                <!-- Participants Table -->
-                <div style="overflow-x: auto;">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Registration Date</th>
-                                <th>Attended</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="participantsTableBody">
-                            <!-- Participants will be populated here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" onclick="closeParticipantsModal()" class="btn-secondary">
-                    <i class="fas fa-times"></i> Close
-                </button>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Immediate authentication check before page renders
-        (function() {
-            const session = sessionStorage.getItem('adminSession') || localStorage.getItem('adminSession');
-            
-            if (!session) {
-                // No session, redirect immediately before page renders
-                window.location.href = 'admin-login.html';
-            }
-        })();
-
-        // Check Authentication on Page Load
-        window.addEventListener('load', function() {
-            const session = sessionStorage.getItem('adminSession') || localStorage.getItem('adminSession');
-            
-            if (!session) {
-                // No session found, redirect to login
-                window.location.href = 'admin-login.html';
-                return;
-            }
-            
-            try {
-                const sessionData = JSON.parse(session);
-                // Update user info in header
-                const userAvatar = document.querySelector('.user-avatar');
-                const userName = document.querySelector('.user-info span');
-                
-                if (userAvatar && userName) {
-                    userAvatar.textContent = sessionData.name.charAt(0).toUpperCase();
-                    userName.textContent = sessionData.name;
-                }
-                
-                // Hide login page and show dashboard
-                document.getElementById('login').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'flex';
-                
-                // Remove loading screen and show body
-                setTimeout(() => {
-                    const loadingScreen = document.getElementById('loading-screen');
-                    if (loadingScreen) {
-                        loadingScreen.style.display = 'none';
-                    }
-                    document.body.classList.add('loaded');
-                    showSection('dashboard-home');
-                }, 100);
-            } catch (error) {
-                console.error('Session error:', error);
-                window.location.href = 'admin-login.html';
-            }
-        });
-
-        // Logout Function
-        function logout() {
-            // Clear all session data
-            sessionStorage.removeItem('adminSession');
-            localStorage.removeItem('adminSession');
-            
-            // Show confirmation
-            if (confirm('Are you sure you want to logout?')) {
-                // Redirect to login page
-                window.location.href = 'admin-login.html';
-            }
-        }
-        // Show/Hide Sections with active state
-        function showSection(sectionId) {
-            const sections = ['dashboard-home', 'manage-profiles', 'manage-events', 'send-messages', 'manage-chapters', 'moderate-content', 'manage-mentorship', 'view-analytics', 'manage-roles', 'system-integration'];
-            sections.forEach(id => {
-                document.getElementById(id).style.display = id === sectionId ? 'block' : 'none';
-            });
-            
-            // Update active nav item
-            document.querySelectorAll('.sidebar a').forEach(link => {
-                link.classList.remove('active');
-            });
-            if (event && event.target) {
-                event.target.closest('a').classList.add('active');
-            }
-        }
-
-        // Chart.js for Analytics
-        const ctx = document.getElementById('engagementChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Cybersecurity', 'AI', 'Datascience', 'AIML'],
-                datasets: [{
-                    label: 'Event Participation',
-                    data: [50, 30, 20, 10],
-                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'],
-                    borderColor: ['#1e40af', '#047857', '#b45309', '#b91c1c'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: { display: true, text: 'Participants' }
-                    },
-                    x: {
-                        title: { display: true, text: 'Domain' }
-                    }
-                },
-                plugins: {
-                    legend: { display: true, position: 'top' },
-                    title: { display: true, text: 'Event Participation by Domain' }
-                }
-            }
-        });
-
-        // Alumni Management System
-        let alumniData = [];
-        let currentPage = 1;
-        const itemsPerPage = 10;
-        let filteredAlumni = [];
-
-        // Initialize Alumni Data
-        function initializeAlumniData() {
-            const stored = localStorage.getItem('alumniProfiles');
-            if (stored) {
-                alumniData = JSON.parse(stored);
-            } else {
-                // Sample data
-                alumniData = [
-                    {
-                        id: 1,
-                        name: 'Rajesh Kumar',
-                        email: 'rajesh.kumar@gmail.com',
-                        phone: '+91 9876543210',
-                        enrollment: 'KLE/CS/2020/001',
-                        department: 'Computer Science',
-                        year: 2024,
-                        company: 'Google India',
-                        jobTitle: 'Software Engineer',
-                        location: 'Bangalore, India',
-                        linkedin: 'https://linkedin.com/in/rajesh-kumar',
-                        achievements: 'Published 3 research papers in AI/ML'
-                    },
-                    {
-                        id: 2,
-                        name: 'Priya Sharma',
-                        email: 'priya.sharma@outlook.com',
-                        phone: '+91 9123456780',
-                        enrollment: 'KLE/IT/2021/045',
-                        department: 'Information Technology',
-                        year: 2024,
-                        company: 'Microsoft',
-                        jobTitle: 'Cloud Solutions Architect',
-                        location: 'Hyderabad, India',
-                        linkedin: 'https://linkedin.com/in/priya-sharma',
-                        achievements: 'Azure Certified Professional, Speaker at tech conferences'
-                    }
-                ];
-                saveAlumniData();
-            }
-            filteredAlumni = [...alumniData];
-            renderAlumniTable();
-        }
-
-        // Save Alumni Data to LocalStorage
-        function saveAlumniData() {
-            localStorage.setItem('alumniProfiles', JSON.stringify(alumniData));
-        }
-
-        // Show Add Alumni Modal
-        function showAddAlumniModal() {
-            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-plus"></i> Add New Alumni';
-            document.getElementById('alumniForm').reset();
-            document.getElementById('alumniId').value = '';
-            document.getElementById('alumniModal').classList.add('show');
-        }
-
-        // Close Alumni Modal
-        function closeAlumniModal() {
-            document.getElementById('alumniModal').classList.remove('show');
-        }
-
-        // Edit Alumni
-        function editAlumni(id) {
-            const alumni = alumniData.find(a => a.id === id);
-            if (!alumni) return;
-
-            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Alumni Profile';
-            document.getElementById('alumniId').value = alumni.id;
-            document.getElementById('alumniName').value = alumni.name;
-            document.getElementById('alumniEmail').value = alumni.email;
-            document.getElementById('alumniPhone').value = alumni.phone || '';
-            document.getElementById('alumniEnrollment').value = alumni.enrollment || '';
-            document.getElementById('alumniDepartment').value = alumni.department;
-            document.getElementById('alumniYear').value = alumni.year;
-            document.getElementById('alumniCompany').value = alumni.company || '';
-            document.getElementById('alumniJobTitle').value = alumni.jobTitle || '';
-            document.getElementById('alumniLocation').value = alumni.location || '';
-            document.getElementById('alumniLinkedIn').value = alumni.linkedin || '';
-            document.getElementById('alumniAchievements').value = alumni.achievements || '';
-
-            document.getElementById('alumniModal').classList.add('show');
-        }
-
-        // Save Alumni
-        function saveAlumni(event) {
-            event.preventDefault();
-
-            const id = document.getElementById('alumniId').value;
-            const alumniObj = {
-                id: id ? parseInt(id) : Date.now(),
-                name: document.getElementById('alumniName').value.trim(),
-                email: document.getElementById('alumniEmail').value.trim(),
-                phone: document.getElementById('alumniPhone').value.trim(),
-                enrollment: document.getElementById('alumniEnrollment').value.trim(),
-                department: document.getElementById('alumniDepartment').value,
-                year: parseInt(document.getElementById('alumniYear').value),
-                company: document.getElementById('alumniCompany').value.trim(),
-                jobTitle: document.getElementById('alumniJobTitle').value.trim(),
-                location: document.getElementById('alumniLocation').value.trim(),
-                linkedin: document.getElementById('alumniLinkedIn').value.trim(),
-                achievements: document.getElementById('alumniAchievements').value.trim()
-            };
-
-            if (id) {
-                // Update existing
-                const index = alumniData.findIndex(a => a.id === parseInt(id));
-                if (index !== -1) {
-                    alumniData[index] = alumniObj;
-                }
-            } else {
-                // Add new
-                alumniData.push(alumniObj);
-            }
-
-            saveAlumniData();
-            filteredAlumni = [...alumniData];
-            renderAlumniTable();
-            closeAlumniModal();
-
-            // Show success message
-            alert(id ? 'Alumni profile updated successfully!' : 'New alumni added successfully!');
-        }
-
-        // Delete Alumni
-        function deleteAlumni(id) {
-            if (confirm('Are you sure you want to delete this alumni profile? This action cannot be undone.')) {
-                alumniData = alumniData.filter(a => a.id !== id);
-                saveAlumniData();
-                filteredAlumni = [...alumniData];
-                renderAlumniTable();
-                alert('Alumni profile deleted successfully!');
-            }
-        }
-
-        // Filter Alumni
-        function filterAlumni() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const deptFilter = document.getElementById('filterDepartment').value;
-            const yearFilter = document.getElementById('filterYear').value;
-            const locationFilter = document.getElementById('filterLocation').value.toLowerCase();
-
-            filteredAlumni = alumniData.filter(alumni => {
-                const matchesSearch = !searchTerm || 
-                    alumni.name.toLowerCase().includes(searchTerm) ||
-                    alumni.email.toLowerCase().includes(searchTerm) ||
-                    (alumni.enrollment && alumni.enrollment.toLowerCase().includes(searchTerm));
-
-                const matchesDept = !deptFilter || alumni.department === deptFilter;
-                const matchesYear = !yearFilter || alumni.year.toString() === yearFilter;
-                const matchesLocation = !locationFilter || 
-                    (alumni.location && alumni.location.toLowerCase().includes(locationFilter));
-
-                return matchesSearch && matchesDept && matchesYear && matchesLocation;
-            });
-
-            currentPage = 1;
-            renderAlumniTable();
-        }
-
-        // Clear Filters
-        function clearFilters() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('filterDepartment').value = '';
-            document.getElementById('filterYear').value = '';
-            document.getElementById('filterLocation').value = '';
-            filteredAlumni = [...alumniData];
-            currentPage = 1;
-            renderAlumniTable();
-        }
-
-        // Toggle Select All
-        function toggleSelectAll() {
-            const selectAll = document.getElementById('selectAll');
-            const checkboxes = document.querySelectorAll('#alumniTableBody input[type="checkbox"]');
-            checkboxes.forEach(cb => cb.checked = selectAll.checked);
-        }
-
-        // Render Alumni Table
-        function renderAlumniTable() {
-            const tbody = document.getElementById('alumniTableBody');
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const pageData = filteredAlumni.slice(startIndex, endIndex);
-
-            if (pageData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 3rem; color: #718096;"><i class="fas fa-users" style="font-size: 3rem; margin-bottom: 1rem; display: block; opacity: 0.3;"></i>No alumni found</td></tr>';
-            } else {
-                tbody.innerHTML = pageData.map(alumni => `
-                    <tr>
-                        <td>
-                            <input type="checkbox" class="alumni-checkbox" data-id="${alumni.id}" style="cursor: pointer;">
-                        </td>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                <div style="width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.125rem;">${alumni.name.charAt(0).toUpperCase()}</div>
-                                <div>
-                                    <div style="font-weight: 700; color: #1a202c;">${alumni.name}</div>
-                                    <div style="font-size: 0.75rem; color: #718096;">${alumni.enrollment || 'N/A'}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div style="font-size: 0.875rem;">
-                                <div><i class="fas fa-envelope" style="color: #667eea; margin-right: 0.5rem;"></i>${alumni.email}</div>
-                                ${alumni.phone ? `<div style="margin-top: 0.25rem;"><i class="fas fa-phone" style="color: #10b981; margin-right: 0.5rem;"></i>${alumni.phone}</div>` : ''}
-                            </div>
-                        </td>
-                        <td>
-                            <div style="font-size: 0.875rem;">
-                                <div style="font-weight: 600; color: #1a202c;">${alumni.department}</div>
-                                <div style="color: #718096; margin-top: 0.25rem;">Class of ${alumni.year}</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div style="font-size: 0.875rem;">
-                                ${alumni.company ? `<div style="font-weight: 600; color: #1a202c;">${alumni.company}</div>` : '<div style="color: #718096;">Not specified</div>'}
-                                ${alumni.jobTitle ? `<div style="color: #718096; margin-top: 0.25rem;">${alumni.jobTitle}</div>` : ''}
-                            </div>
-                        </td>
-                        <td>
-                            <div style="font-size: 0.875rem; color: #718096;">
-                                <i class="fas fa-map-marker-alt" style="color: #ef4444; margin-right: 0.5rem;"></i>${alumni.location || 'Not specified'}
-                            </div>
-                        </td>
-                        <td>
-                            <div class="table-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                                <button onclick="editAlumni(${alumni.id})" class="btn-secondary" style="padding: 0.5rem; font-size: 0.875rem;" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button onclick="deleteAlumni(${alumni.id})" class="btn-danger" style="padding: 0.5rem; font-size: 0.875rem;" title="Delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-
-            // Update counts
-            document.getElementById('showingCount').textContent = pageData.length;
-            document.getElementById('totalCount').textContent = filteredAlumni.length;
-
-            // Render pagination
-            renderPagination();
-        }
-
-        // Render Pagination
-        function renderPagination() {
-            const totalPages = Math.ceil(filteredAlumni.length / itemsPerPage);
-            const pagination = document.getElementById('pagination');
-
-            if (totalPages <= 1) {
-                pagination.innerHTML = '';
-                return;
-            }
-
-            let html = '';
-
-            // Previous button
-            html += `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} 
-                        class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
-                        <i class="fas fa-chevron-left"></i>
-                     </button>`;
-
-            // Page numbers
-            for (let i = 1; i <= totalPages; i++) {
-                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
-                    const isActive = i === currentPage;
-                    html += `<button onclick="changePage(${i})" 
-                                class="${isActive ? 'btn-success' : 'btn-secondary'}" 
-                                style="padding: 0.5rem 1rem; font-size: 0.875rem;">
-                                ${i}
-                             </button>`;
-                } else if (i === currentPage - 2 || i === currentPage + 2) {
-                    html += '<span style="padding: 0.5rem;">...</span>';
-                }
-            }
-
-            // Next button
-            html += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} 
-                        class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
-                        <i class="fas fa-chevron-right"></i>
-                     </button>`;
-
-            pagination.innerHTML = html;
-        }
-
-        // Change Page
-        function changePage(page) {
-            const totalPages = Math.ceil(filteredAlumni.length / itemsPerPage);
-            if (page < 1 || page > totalPages) return;
-            currentPage = page;
-            renderAlumniTable();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Detect Duplicates
-        function detectDuplicates() {
-            const duplicates = [];
-            const emailMap = new Map();
-            const enrollmentMap = new Map();
-
-            alumniData.forEach(alumni => {
-                // Check email duplicates
-                if (emailMap.has(alumni.email.toLowerCase())) {
-                    duplicates.push({
-                        type: 'Email',
-                        value: alumni.email,
-                        alumni: [emailMap.get(alumni.email.toLowerCase()), alumni]
-                    });
-                } else {
-                    emailMap.set(alumni.email.toLowerCase(), alumni);
-                }
-
-                // Check enrollment duplicates
-                if (alumni.enrollment && enrollmentMap.has(alumni.enrollment.toLowerCase())) {
-                    duplicates.push({
-                        type: 'Enrollment',
-                        value: alumni.enrollment,
-                        alumni: [enrollmentMap.get(alumni.enrollment.toLowerCase()), alumni]
-                    });
-                } else if (alumni.enrollment) {
-                    enrollmentMap.set(alumni.enrollment.toLowerCase(), alumni);
-                }
-            });
-
-            if (duplicates.length === 0) {
-                alert('No duplicates found! All alumni records are unique.');
-                return;
-            }
-
-            showDuplicatesModal(duplicates);
-        }
-
-        // Show Duplicates Modal
-        function showDuplicatesModal(duplicates) {
-            const content = duplicates.map((dup, index) => `
-                <div style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #ef4444;">
-                    <div style="font-weight: 700; color: #ef4444; margin-bottom: 0.5rem;">
-                        <i class="fas fa-exclamation-triangle"></i> Duplicate ${dup.type}: ${dup.value}
-                    </div>
-                    ${dup.alumni.map(a => `
-                        <div style="background: white; padding: 0.75rem; border-radius: 6px; margin-top: 0.5rem;">
-                            <strong>${a.name}</strong> - ${a.department} (${a.year})
-                            <button onclick="deleteAlumni(${a.id}); closeDuplicatesModal(); filterAlumni();" 
-                                    class="btn-danger" style="padding: 0.25rem 0.75rem; font-size: 0.75rem; margin-left: 1rem;">
-                                <i class="fas fa-trash"></i> Remove
-                            </button>
-                        </div>
-                    `).join('')}
-                </div>
-            `).join('');
-
-            document.getElementById('duplicatesList').innerHTML = content;
-            document.getElementById('duplicatesModal').classList.add('show');
-        }
-
-        // Close Duplicates Modal
-        function closeDuplicatesModal() {
-            document.getElementById('duplicatesModal').classList.remove('show');
-        }
-
-        // Export Alumni Data
-        function exportAlumniData() {
-            const csv = [
-                ['Name', 'Email', 'Phone', 'Enrollment', 'Department', 'Year', 'Company', 'Job Title', 'Location', 'LinkedIn', 'Achievements'],
-                ...filteredAlumni.map(a => [
-                    a.name,
-                    a.email,
-                    a.phone || '',
-                    a.enrollment || '',
-                    a.department,
-                    a.year,
-                    a.company || '',
-                    a.jobTitle || '',
-                    a.location || '',
-                    a.linkedin || '',
-                    a.achievements || ''
-                ])
-            ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
-
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `alumni_data_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            window.URL.revokeObjectURL(url);
-        }
-
-        // Initialize when manage-profiles section is shown
-        const originalShowSection = showSection;
-        showSection = function(sectionId) {
-            originalShowSection(sectionId);
-            if (sectionId === 'manage-profiles' && alumniData.length === 0) {
-                initializeAlumniData();
-            }
-            if (sectionId === 'manage-events' && eventsData.length === 0) {
-                initializeEventsData();
-            }
+        let userDomains = [];
+        let userName = 'Saavan Patel';
+        let page = 1;
+        const postsPerPage = 5;
+        let appreciatedPosts = new Set();
+        let postIdCounter = 25;
+        let allPosts = [];
+        let notifications = [
+            { id: 1, user: 'Aarav Sharma', role: 'Student', text: 'Commented on your post: "Great insights on cloud security!"', timestamp: '2 hours ago' },
+            { id: 2, user: 'Sneha Verma', role: 'Student', text: 'Sent you a message about penetration testing tools.', timestamp: '5 hours ago' },
+            { id: 3, user: 'Rohan Gupta', role: 'Student', text: 'Appreciated your post on AI ethics.', timestamp: '1 day ago' }
+        ];
+        let messages = {
+            'Aarav Sharma': [
+                { user: 'Aarav Sharma', text: 'Hi Saavan, can you recommend some cloud security tools?', timestamp: '2 hours ago', isSent: false },
+                { user: userName, text: 'Sure, AWS Security Hub and Azure Sentinel are great options.', timestamp: '1 hour ago', isSent: true }
+            ],
+            'Sneha Verma': [
+                { user: 'Sneha Verma', text: 'What are the best penetration testing tools for 2025?', timestamp: '5 hours ago', isSent: false }
+            ],
+            'Rohan Gupta': [
+                { user: 'Rohan Gupta', text: 'Loved your post on AI ethics, any books to recommend?', timestamp: '1 day ago', isSent: false }
+            ]
         };
 
-        // ==================== EVENT MANAGEMENT SYSTEM ====================
-        let eventsData = [];
-        let currentEventId = null;
-        let filteredEvents = [];
+        // Sample answers with Indian alumni names
+        const answers = {
+            post1: [{ user: 'Anika Singh', role: 'Alumni', text: 'Use AWS Security Hub.', timestamp: '1 hour ago' }],
+            post2: [{ user: 'Vikram Malhotra', role: 'Alumni', text: 'Zero-trust requires verification.', timestamp: '20 hours ago' }],
+            post3: [{ user: 'Neha Kulkarni', role: 'Alumni', text: 'Burp Suite is great.', timestamp: '2 hours ago' }],
+            post4: [],
+            post5: [{ user: 'Arjun Desai', role: 'Alumni', text: 'Use ONNX for inference.', timestamp: '4 hours ago' }],
+            post6: [],
+            post7: [{ user: 'Anika Singh', role: 'Alumni', text: 'Next.js is excellent.', timestamp: '8 hours ago' }],
+            post8: []
+        };
 
-        // Initialize Events Data
-        function initializeEventsData() {
-            const stored = localStorage.getItem('eventsData');
-            if (stored) {
-                eventsData = JSON.parse(stored);
-            } else {
-                // Sample event data
-                eventsData = [
-                    {
-                        id: 1,
-                        title: 'Annual Alumni Reunion 2025',
-                        type: 'reunion',
-                        date: '2025-12-15',
-                        startTime: '10:00',
-                        endTime: '17:00',
-                        location: 'KLE Tech Main Campus, Hubli',
-                        description: 'Join us for our annual alumni reunion with networking sessions, campus tour, and dinner.',
-                        maxParticipants: 200,
-                        status: 'upcoming',
-                        participants: [
-                            { id: 1, name: 'Rajesh Kumar', email: 'rajesh.kumar@gmail.com', phone: '+91 9876543210', registeredDate: '2025-11-01', attended: 'pending' },
-                            { id: 2, name: 'Priya Sharma', email: 'priya.sharma@outlook.com', phone: '+91 9123456780', registeredDate: '2025-11-05', attended: 'pending' }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        title: 'Career Development Webinar',
-                        type: 'webinar',
-                        date: '2025-11-20',
-                        startTime: '15:00',
-                        endTime: '16:30',
-                        location: 'Zoom (Link will be shared)',
-                        description: 'Expert panel discussion on career transitions and professional growth strategies.',
-                        maxParticipants: 500,
-                        status: 'upcoming',
-                        participants: [
-                            { id: 1, name: 'Amit Patel', email: 'amit.p@gmail.com', phone: '+91 9988776655', registeredDate: '2025-11-10', attended: 'pending' },
-                            { id: 2, name: 'Sneha Reddy', email: 'sneha.r@yahoo.com', phone: '+91 8877665544', registeredDate: '2025-11-12', attended: 'pending' },
-                            { id: 3, name: 'Karan Singh', email: 'karan.s@gmail.com', phone: '+91 7766554433', registeredDate: '2025-11-13', attended: 'pending' }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        title: 'AI & Machine Learning Workshop',
-                        type: 'workshop',
-                        date: '2025-10-10',
-                        startTime: '09:00',
-                        endTime: '16:00',
-                        location: 'Computer Science Lab, KLE Tech',
-                        description: 'Hands-on workshop on AI/ML fundamentals with practical implementation.',
-                        maxParticipants: 50,
-                        status: 'completed',
-                        participants: [
-                            { id: 1, name: 'Vikram Desai', email: 'vikram.d@gmail.com', phone: '+91 9876012345', registeredDate: '2025-09-25', attended: 'yes' },
-                            { id: 2, name: 'Anjali Nair', email: 'anjali.n@outlook.com', phone: '+91 8765012345', registeredDate: '2025-09-28', attended: 'yes' },
-                            { id: 3, name: 'Rohan Mehta', email: 'rohan.m@gmail.com', phone: '+91 7654012345', registeredDate: '2025-09-30', attended: 'no' }
-                        ]
-                    }
-                ];
-                saveEventsData();
-            }
-            filteredEvents = [...eventsData];
-            renderEventsTable();
-            updateEventAnalytics();
-        }
+        // Hardcoded 25 posts
+        const hardcodedPosts = [
+            { id: 'post1', domain: 'Cybersecurity', question: 'What are the latest trends in encryption?', user: 'Aarav Sharma', role: 'Student', timestamp: '2 hours ago', popularity: 10, hashtag: '#Tech' },
+            { id: 'post2', domain: 'Cybersecurity', question: 'How to mitigate DDoS attacks?', user: 'Rohan Gupta', role: 'Student', timestamp: '5 hours ago', popularity: 15, hashtag: '#Security' },
+            { id: 'post3', domain: 'Data Science', question: 'How to handle missing data?', user: 'Sneha Verma', role: 'Student', timestamp: '1 day ago', popularity: 8, hashtag: '#Data' },
+            { id: 'post4', domain: 'Artificial Intelligence', question: 'What are GANs used for?', user: 'Vikram Joshi', role: 'Student', timestamp: '3 hours ago', popularity: 12, hashtag: '#AI' },
+            { id: 'post5', domain: 'Software Engineering', question: 'How to write clean code?', user: 'Priya Patel', role: 'Student', timestamp: '6 hours ago', popularity: 20, hashtag: '#Coding' },
+            { id: 'post6', domain: 'Machine Learning', question: 'How to prevent overfitting?', user: 'Karan Mehta', role: 'Student', timestamp: '10 hours ago', popularity: 7, hashtag: '#ML' },
+            { id: 'post7', domain: 'Database Systems', question: 'What is normalization?', user: 'Meera Nair', role: 'Student', timestamp: '12 hours ago', popularity: 5, hashtag: '#DB' },
+            { id: 'post8', domain: 'Web Development', question: 'What is React vs. Angular?', user: 'Deepak Singh', role: 'Student', timestamp: '15 hours ago', popularity: 18, hashtag: '#Web' },
+            { id: 'post9', domain: 'Mobile App Development', question: 'How to develop for iOS?', user: 'Aarav Sharma', role: 'Student', timestamp: '1 day ago', popularity: 9, hashtag: '#Mobile' },
+            { id: 'post10', domain: 'Cloud Computing', question: 'What is serverless computing?', user: 'Rohan Gupta', role: 'Student', timestamp: '2 days ago', popularity: 14, hashtag: '#Cloud' },
+            { id: 'post11', domain: 'Networking', question: 'What is TCP/IP?', user: 'Sneha Verma', role: 'Student', timestamp: '3 days ago', popularity: 6, hashtag: '#Network' },
+            { id: 'post12', domain: 'General', question: 'How to prepare for tech interviews?', user: 'Vikram Joshi', role: 'Student', timestamp: '4 hours ago', popularity: 22, hashtag: '#Career' },
+            { id: 'post13', domain: 'Success Story', question: 'How I landed my job at Google', user: 'Anika Singh', role: 'Alumni', timestamp: '5 hours ago', popularity: 25, hashtag: '#Success' },
+            { id: 'post14', domain: 'New Hiring Opportunity', question: 'Job at SecureNet for analysts', user: 'Vikram Malhotra', role: 'Alumni', timestamp: '6 hours ago', popularity: 30, hashtag: '#Hiring' },
+            { id: 'post15', domain: 'Cybersecurity', question: 'Best practices for secure APIs?', user: 'Priya Patel', role: 'Student', timestamp: '7 hours ago', popularity: 11, hashtag: '#Security' },
+            { id: 'post16', domain: 'Data Science', question: 'Best tools for visualization?', user: 'Karan Mehta', role: 'Student', timestamp: '8 hours ago', popularity: 13, hashtag: '#Data' },
+            { id: 'post17', domain: 'Artificial Intelligence', question: 'Ethics in AI?', user: 'Meera Nair', role: 'Student', timestamp: '9 hours ago', popularity: 10, hashtag: '#AI' },
+            { id: 'post18', domain: 'Software Engineering', question: 'What is Agile methodology?', user: 'Deepak Singh', role: 'Student', timestamp: '10 hours ago', popularity: 17, hashtag: '#Coding' },
+            { id: 'post19', domain: 'Machine Learning', question: 'What are ensemble methods?', user: 'Aarav Sharma', role: 'Student', timestamp: '11 hours ago', popularity: 8, hashtag: '#ML' },
+            { id: 'post20', domain: 'Database Systems', question: 'How to optimize SQL queries?', user: 'Rohan Gupta', role: 'Student', timestamp: '12 hours ago', popularity: 6, hashtag: '#DB' },
+            { id: 'post21', domain: 'Web Development', question: 'How to optimize web performance?', user: 'Sneha Verma', role: 'Student', timestamp: '13 hours ago', popularity: 15, hashtag: '#Web' },
+            { id: 'post22', domain: 'Cloud Computing', question: 'How to choose a cloud provider?', user: 'Vikram Joshi', role: 'Student', timestamp: '14 hours ago', popularity: 12, hashtag: '#Cloud' },
+            { id: 'post23', domain: 'Networking', question: 'How to configure a firewall?', user: 'Priya Patel', role: 'Student', timestamp: '15 hours ago', popularity: 9, hashtag: '#Network' },
+            { id: 'post24', domain: 'General', question: 'What are best coding practices?', user: 'Karan Mehta', role: 'Student', timestamp: '16 hours ago', popularity: 19, hashtag: '#Career' },
+            { id: 'post25', domain: 'Success Story', question: 'My journey to CTO', user: 'Neha Kulkarni', role: 'Alumni', timestamp: '17 hours ago', popularity: 23, hashtag: '#Success' }
+        ];
 
-        // Save Events Data
-        function saveEventsData() {
-            localStorage.setItem('eventsData', JSON.stringify(eventsData));
-        }
-
-        // Show Add Event Modal
-        function showAddEventModal() {
-            document.getElementById('eventModalTitle').innerHTML = '<i class="fas fa-calendar-plus"></i> Add New Event';
-            document.getElementById('eventForm').reset();
-            document.getElementById('eventId').value = '';
-            document.getElementById('eventStatus').value = 'upcoming';
-            document.getElementById('eventModal').classList.add('show');
-        }
-
-        // Close Event Modal
-        function closeEventModal() {
-            document.getElementById('eventModal').classList.remove('show');
-        }
-
-        // Edit Event
-        function editEvent(id) {
-            const event = eventsData.find(e => e.id === id);
-            if (!event) return;
-
-            document.getElementById('eventModalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Event';
-            document.getElementById('eventId').value = event.id;
-            document.getElementById('eventTitle').value = event.title;
-            document.getElementById('eventType').value = event.type;
-            document.getElementById('eventDate').value = event.date;
-            document.getElementById('eventStartTime').value = event.startTime;
-            document.getElementById('eventEndTime').value = event.endTime;
-            document.getElementById('eventLocation').value = event.location;
-            document.getElementById('eventDescription').value = event.description || '';
-            document.getElementById('eventMaxParticipants').value = event.maxParticipants || '';
-            document.getElementById('eventStatus').value = event.status;
-
-            document.getElementById('eventModal').classList.add('show');
-        }
-
-        // Save Event
-        function saveEvent(event) {
-            event.preventDefault();
-
-            const id = document.getElementById('eventId').value;
-            const eventObj = {
-                id: id ? parseInt(id) : Date.now(),
-                title: document.getElementById('eventTitle').value.trim(),
-                type: document.getElementById('eventType').value,
-                date: document.getElementById('eventDate').value,
-                startTime: document.getElementById('eventStartTime').value,
-                endTime: document.getElementById('eventEndTime').value,
-                location: document.getElementById('eventLocation').value.trim(),
-                description: document.getElementById('eventDescription').value.trim(),
-                maxParticipants: parseInt(document.getElementById('eventMaxParticipants').value) || null,
-                status: document.getElementById('eventStatus').value,
-                participants: id ? eventsData.find(e => e.id === parseInt(id)).participants : []
-            };
-
-            if (id) {
-                // Update existing
-                const index = eventsData.findIndex(e => e.id === parseInt(id));
-                if (index !== -1) {
-                    eventsData[index] = eventObj;
-                }
-            } else {
-                // Add new
-                eventsData.push(eventObj);
-            }
-
-            saveEventsData();
-            filteredEvents = [...eventsData];
-            renderEventsTable();
-            updateEventAnalytics();
-            closeEventModal();
-
-            alert(id ? 'Event updated successfully!' : 'New event created successfully!');
-        }
-
-        // Delete Event
-        function deleteEvent(id) {
-            if (confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
-                eventsData = eventsData.filter(e => e.id !== id);
-                saveEventsData();
-                filteredEvents = [...eventsData];
-                renderEventsTable();
-                updateEventAnalytics();
-                alert('Event deleted successfully!');
-            }
-        }
-
-        // Filter Events
-        function filterEvents() {
-            const searchTerm = document.getElementById('searchEvents').value.toLowerCase();
-            const typeFilter = document.getElementById('filterEventType').value;
-            const statusFilter = document.getElementById('filterEventStatus').value;
-
-            filteredEvents = eventsData.filter(event => {
-                const matchesSearch = !searchTerm || 
-                    event.title.toLowerCase().includes(searchTerm) ||
-                    event.location.toLowerCase().includes(searchTerm);
-
-                const matchesType = !typeFilter || event.type === typeFilter;
-                const matchesStatus = !statusFilter || event.status === statusFilter;
-
-                return matchesSearch && matchesType && matchesStatus;
-            });
-
-            renderEventsTable();
-        }
-
-        // Get Event Type Badge
-        function getEventTypeBadge(type) {
-            const badges = {
-                reunion: '<span style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-handshake"></i> Reunion</span>',
-                webinar: '<span style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-video"></i> Webinar</span>',
-                workshop: '<span style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-chalkboard-teacher"></i> Workshop</span>',
-                seminar: '<span style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-presentation"></i> Seminar</span>',
-                networking: '<span style="background: rgba(236, 72, 153, 0.1); color: #ec4899; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-network-wired"></i> Networking</span>'
-            };
-            return badges[type] || type;
-        }
-
-        // Get Status Badge
-        function getStatusBadge(status) {
-            const badges = {
-                upcoming: '<span style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-clock"></i> Upcoming</span>',
-                ongoing: '<span style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-circle-notch fa-spin"></i> Ongoing</span>',
-                completed: '<span style="background: rgba(107, 114, 128, 0.1); color: #6b7280; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-check-circle"></i> Completed</span>',
-                cancelled: '<span style="background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-times-circle"></i> Cancelled</span>'
-            };
-            return badges[status] || status;
-        }
-
-        // Render Events Table
-        function renderEventsTable() {
-            const tbody = document.getElementById('eventsTableBody');
-
-            if (filteredEvents.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 3rem; color: #718096;"><i class="fas fa-calendar-times" style="font-size: 3rem; margin-bottom: 1rem; display: block; opacity: 0.3;"></i>No events found</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = filteredEvents.map(event => {
-                const participantsCount = event.participants ? event.participants.length : 0;
-                const attendedCount = event.participants ? event.participants.filter(p => p.attended === 'yes').length : 0;
-                const attendanceRate = participantsCount > 0 ? Math.round((attendedCount / participantsCount) * 100) : 0;
-
-                return `
-                    <tr>
-                        <td>
-                            <div style="font-weight: 700; color: #1a202c; margin-bottom: 0.25rem;">${event.title}</div>
-                            <div style="font-size: 0.75rem; color: #718096;"><i class="fas fa-map-marker-alt" style="margin-right: 0.25rem;"></i>${event.location}</div>
-                        </td>
-                        <td>
-                            <div style="font-size: 0.875rem;">
-                                <div style="font-weight: 600; color: #1a202c;"><i class="fas fa-calendar" style="color: #667eea; margin-right: 0.25rem;"></i>${formatDate(event.date)}</div>
-                                <div style="color: #718096; margin-top: 0.25rem;"><i class="fas fa-clock" style="margin-right: 0.25rem;"></i>${event.startTime} - ${event.endTime}</div>
+        function initializePosts() {
+            const postFeed = document.getElementById('postFeed');
+            allPosts = hardcodedPosts.map(post => {
+                const postElement = document.createElement('div');
+                postElement.id = post.id;
+                postElement.className = 'post-card bg-white p-6 rounded-lg shadow-md border border-gray-300';
+                postElement.dataset.domain = post.domain;
+                postElement.dataset.popularity = post.popularity;
+                postElement.dataset.hours = formatTimestampToHours(post.timestamp);
+                postElement.dataset.hashtags = post.hashtag;
+                const badgeClass = post.domain === 'New Hiring Opportunity' ? 'hiring' : 
+                                 post.domain === 'General' || post.domain === 'Success Story' ? 'general' : 'domain';
+                const isRecommended = userDomains.includes(post.domain);
+                postElement.innerHTML = `
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-900 font-medium">${post.user[0]}</div>
+                        <div>
+                            <div class="font-semibold text-gray-800">${post.user} <span class="user-badge ml-2">${post.role}</span></div>
+                            <div class="text-sm text-gray-500">
+                                <span class="domain-tag ${badgeClass}">${post.domain}</span>
+                                ${isRecommended ? '<span class="domain-tag recommended ml-2">Recommended</span>' : ''}
+                                • ${post.timestamp} <span class="hashtag">${post.hashtag}</span>
                             </div>
-                        </td>
-                        <td>${getEventTypeBadge(event.type)}</td>
-                        <td>
-                            <div style="font-size: 0.875rem;">
-                                <div style="font-weight: 700; color: #1a202c; font-size: 1.125rem;">${participantsCount}</div>
-                                ${event.maxParticipants ? `<div style="color: #718096; font-size: 0.75rem;">of ${event.maxParticipants} max</div>` : ''}
-                            </div>
-                        </td>
-                        <td>
-                            <div style="font-size: 0.875rem;">
-                                <div style="font-weight: 700; color: ${attendanceRate >= 70 ? '#10b981' : attendanceRate >= 40 ? '#f59e0b' : '#ef4444'}; font-size: 1.125rem;">${attendanceRate}%</div>
-                                <div style="color: #718096; font-size: 0.75rem;">${attendedCount}/${participantsCount} attended</div>
-                            </div>
-                        </td>
-                        <td>${getStatusBadge(event.status)}</td>
-                        <td>
-                            <div class="table-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                                <button onclick="manageParticipants(${event.id})" class="btn-primary" style="padding: 0.5rem; font-size: 0.875rem;" title="Manage Participants">
-                                    <i class="fas fa-users"></i>
-                                </button>
-                                <button onclick="editEvent(${event.id})" class="btn-secondary" style="padding: 0.5rem; font-size: 0.875rem;" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button onclick="deleteEvent(${event.id})" class="btn-danger" style="padding: 0.5rem; font-size: 0.875rem;" title="Delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-2 font-medium">${post.question}</p>
+                    <p class="text-gray-600 mb-4">${post.question} This is a sample post content.</p>
+                    <div class="flex gap-4 mb-4">
+                        <button class="flex items-center gap-1 text-gray-600 hover:text-red-500" onclick="toggleAppreciate(this, '${post.id}')">
+                            <span>❤️</span> Appreciate (<span id="${post.id}-appreciates">${post.popularity}</span>)
+                        </button>
+                        <button class="flex items-center gap-1 text-gray-600 hover:text-indigo-500" onclick="toggleAnswers('${post.id}')">
+                            <span>💬</span> Answer (<span id="${post.id}-answers">${answers[post.id]?.length || 0}</span>)
+                        </button>
+                    </div>
+                    <div id="${post.id}-answers-container" class="hidden"></div>
                 `;
-            }).join('');
-        }
-
-        // Format Date
-        function formatDate(dateStr) {
-            const date = new Date(dateStr);
-            const options = { year: 'numeric', month: 'short', day: 'numeric' };
-            return date.toLocaleDateString('en-US', options);
-        }
-
-        // Update Event Analytics
-        function updateEventAnalytics() {
-            // Total Events
-            document.getElementById('totalEventsCount').textContent = eventsData.length;
-
-            // Upcoming Events
-            const upcomingCount = eventsData.filter(e => e.status === 'upcoming').length;
-            document.getElementById('upcomingEventsCount').textContent = upcomingCount;
-
-            // Total Participants
-            const totalParticipants = eventsData.reduce((sum, e) => sum + (e.participants ? e.participants.length : 0), 0);
-            document.getElementById('totalParticipantsCount').textContent = totalParticipants;
-
-            // Average Attendance Rate
-            const completedEvents = eventsData.filter(e => e.status === 'completed');
-            if (completedEvents.length > 0) {
-                const totalAttendanceRate = completedEvents.reduce((sum, e) => {
-                    const participants = e.participants || [];
-                    const attended = participants.filter(p => p.attended === 'yes').length;
-                    return sum + (participants.length > 0 ? (attended / participants.length) * 100 : 0);
-                }, 0);
-                const avgRate = Math.round(totalAttendanceRate / completedEvents.length);
-                document.getElementById('avgAttendanceRate').textContent = avgRate + '%';
-            } else {
-                document.getElementById('avgAttendanceRate').textContent = '0%';
-            }
-
-            // Most Popular Type
-            const typeCounts = {};
-            eventsData.forEach(e => {
-                const count = e.participants ? e.participants.length : 0;
-                typeCounts[e.type] = (typeCounts[e.type] || 0) + count;
+                return postElement;
             });
-            const mostPopular = Object.keys(typeCounts).reduce((a, b) => typeCounts[a] > typeCounts[b] ? a : b, '');
-            const typeNames = {
-                reunion: 'Reunion',
-                webinar: 'Webinar',
-                workshop: 'Workshop',
-                seminar: 'Seminar',
-                networking: 'Networking'
-            };
-            document.getElementById('mostPopularType').textContent = mostPopular ? typeNames[mostPopular] : '-';
+            Object.keys(answers).forEach(postId => {
+                updateAnswersContainer(postId);
+            });
         }
 
-        // Manage Participants
-        function manageParticipants(eventId) {
-            currentEventId = eventId;
-            const event = eventsData.find(e => e.id === eventId);
-            if (!event) return;
-
-            document.getElementById('participantsModalTitle').innerHTML = `<i class="fas fa-users"></i> Participants - ${event.title}`;
-            renderParticipantsTable();
-            document.getElementById('participantsModal').classList.add('show');
+        function formatTimestampToHours(timestamp) {
+            const match = timestamp.match(/(\d+)\s+(hour|day)s?/);
+            if (!match) return 0;
+            const value = parseInt(match[1]);
+            return match[2] === 'day' ? value * 24 : value;
         }
 
-        // Close Participants Modal
-        function closeParticipantsModal() {
-            document.getElementById('participantsModal').classList.remove('show');
-            currentEventId = null;
-            hideAddParticipantForm();
-        }
-
-        // Show Add Participant Form
-        function showAddParticipantForm() {
-            document.getElementById('addParticipantForm').style.display = 'block';
-        }
-
-        // Hide Add Participant Form
-        function hideAddParticipantForm() {
-            document.getElementById('addParticipantForm').style.display = 'none';
-            document.getElementById('participantName').value = '';
-            document.getElementById('participantEmail').value = '';
-            document.getElementById('participantPhone').value = '';
-            document.getElementById('participantAttended').value = 'pending';
-        }
-
-        // Add Participant
-        function addParticipant(event) {
-            event.preventDefault();
-
-            if (!currentEventId) return;
-
-            const eventObj = eventsData.find(e => e.id === currentEventId);
-            if (!eventObj) return;
-
-            if (!eventObj.participants) {
-                eventObj.participants = [];
-            }
-
-            // Check max participants
-            if (eventObj.maxParticipants && eventObj.participants.length >= eventObj.maxParticipants) {
-                alert('Maximum participants limit reached!');
-                return;
-            }
-
-            const participant = {
-                id: Date.now(),
-                name: document.getElementById('participantName').value.trim(),
-                email: document.getElementById('participantEmail').value.trim(),
-                phone: document.getElementById('participantPhone').value.trim(),
-                registeredDate: new Date().toISOString().split('T')[0],
-                attended: document.getElementById('participantAttended').value
-            };
-
-            eventObj.participants.push(participant);
-            saveEventsData();
-            renderParticipantsTable();
-            renderEventsTable();
-            updateEventAnalytics();
-            hideAddParticipantForm();
-
-            alert('Participant added successfully!');
-        }
-
-        // Remove Participant
-        function removeParticipant(participantId) {
-            if (!currentEventId) return;
-
-            if (confirm('Are you sure you want to remove this participant?')) {
-                const event = eventsData.find(e => e.id === currentEventId);
-                if (event && event.participants) {
-                    event.participants = event.participants.filter(p => p.id !== participantId);
-                    saveEventsData();
-                    renderParticipantsTable();
-                    renderEventsTable();
-                    updateEventAnalytics();
-                    alert('Participant removed successfully!');
-                }
-            }
-        }
-
-        // Toggle Attendance
-        function toggleAttendance(participantId) {
-            if (!currentEventId) return;
-
-            const event = eventsData.find(e => e.id === currentEventId);
-            if (event && event.participants) {
-                const participant = event.participants.find(p => p.id === participantId);
-                if (participant) {
-                    // Cycle through: pending -> yes -> no -> pending
-                    if (participant.attended === 'pending') {
-                        participant.attended = 'yes';
-                    } else if (participant.attended === 'yes') {
-                        participant.attended = 'no';
-                    } else {
-                        participant.attended = 'pending';
-                    }
-
-                    saveEventsData();
-                    renderParticipantsTable();
-                    renderEventsTable();
-                    updateEventAnalytics();
-                }
-            }
-        }
-
-        // Render Participants Table
-        function renderParticipantsTable() {
-            if (!currentEventId) return;
-
-            const event = eventsData.find(e => e.id === currentEventId);
-            if (!event) return;
-
-            const tbody = document.getElementById('participantsTableBody');
-            const participants = event.participants || [];
-
-            if (participants.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #718096;"><i class="fas fa-user-times" style="font-size: 2rem; margin-bottom: 0.5rem; display: block; opacity: 0.3;"></i>No participants registered yet</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = participants.map(p => {
-                const attendedBadge = {
-                    pending: '<span style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; cursor: pointer;"><i class="fas fa-clock"></i> Pending</span>',
-                    yes: '<span style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; cursor: pointer;"><i class="fas fa-check-circle"></i> Attended</span>',
-                    no: '<span style="background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; cursor: pointer;"><i class="fas fa-times-circle"></i> Absent</span>'
-                };
-
-                return `
-                    <tr>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <div style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">${p.name.charAt(0).toUpperCase()}</div>
-                                <div style="font-weight: 600; color: #1a202c;">${p.name}</div>
-                            </div>
-                        </td>
-                        <td style="font-size: 0.875rem; color: #718096;"><i class="fas fa-envelope" style="color: #667eea; margin-right: 0.5rem;"></i>${p.email}</td>
-                        <td style="font-size: 0.875rem; color: #718096;">${p.phone || '-'}</td>
-                        <td style="font-size: 0.875rem; color: #718096;">${formatDate(p.registeredDate)}</td>
-                        <td onclick="toggleAttendance(${p.id})">${attendedBadge[p.attended]}</td>
-                        <td>
-                            <button onclick="removeParticipant(${p.id})" class="btn-danger" style="padding: 0.5rem; font-size: 0.875rem;" title="Remove">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
+        function updateAnswersContainer(postId) {
+            const container = document.getElementById(`${postId}-answers-container`);
+            if (container) {
+                const existingAnswers = answers[postId] || [];
+                container.innerHTML = `
+                    <h4 class="font-semibold text-gray-800 mb-2">Answers</h4>
+                    ${existingAnswers.length ? existingAnswers.map(a => `
+                        <div class="${a.role === 'Alumni' ? 'alumni-answer' : 'student-answer'}">
+                            <div class="font-semibold text-gray-800">${a.user} <span class="user-badge ml-2">${a.role}</span></div>
+                            <p class="text-gray-700">${a.text}</p>
+                            <p class="text-xs text-gray-500">${a.timestamp}</p>
+                        </div>
+                    `).join('') : '<p class="text-gray-600 text-sm">No answers yet.</p>'}
+                    <div class="mt-4">
+                        <textarea id="${postId}-answer-input" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Type your answer..." rows="3"></textarea>
+                        <button class="mt-2 button-primary" onclick="submitAnswer('${postId}')">Submit Answer</button>
+                    </div>
                 `;
-            }).join('');
+            }
         }
 
-        // Send Event Notifications
-        function sendEventNotifications() {
-            if (!currentEventId) return;
+        function toggleAnswers(postId) {
+            const container = document.getElementById(`${postId}-answers-container`);
+            if (container) {
+                container.classList.toggle('hidden');
+                if (!container.classList.contains('hidden')) {
+                    updateAnswersContainer(postId); // Refresh answers when shown
+                }
+            }
+        }
 
-            const event = eventsData.find(e => e.id === currentEventId);
-            if (!event || !event.participants || event.participants.length === 0) {
-                alert('No participants to notify!');
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => section.classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+            document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active-nav'));
+            document.querySelector(`[onclick="showSection('${sectionId}')"]`).classList.add('active-nav');
+            if (sectionId === 'feed') {
+                filterPosts();
+                loadMorePosts();
+            } else if (sectionId === 'messages') {
+                showConversation('Aarav Sharma'); // Show first conversation by default
+            }
+        }
+
+        function filterPosts() {
+            const domain = document.getElementById('domainFilter').value;
+            const searchTerm = document.getElementById('searchBar').value.toLowerCase();
+            allPosts.forEach(post => {
+                const matchesDomain = domain === 'None' || post.dataset.domain === domain;
+                const content = Array.from(post.querySelectorAll('p')).map(p => p.textContent.toLowerCase()).join(' ');
+                const userName = post.querySelector('.font-semibold').textContent.toLowerCase();
+                const hashtags = post.dataset.hashtags.toLowerCase();
+                const matchesSearch = !searchTerm || content.includes(searchTerm) || userName.includes(searchTerm) || hashtags.includes(searchTerm);
+                post.style.display = matchesDomain && matchesSearch ? 'block' : 'none';
+            });
+            sortPosts();
+        }
+
+        function sortPosts() {
+            const postFeed = document.getElementById('postFeed');
+            const visiblePosts = allPosts.filter(post => post.style.display !== 'none');
+            const userDomainPosts = visiblePosts.filter(post => userDomains.includes(post.dataset.domain));
+            const otherPosts = visiblePosts.filter(post => !userDomains.includes(post.dataset.domain));
+            const sortedPosts = [...userDomainPosts, ...otherPosts]; // Prioritize userDomains
+            postFeed.innerHTML = ''; // Clear and rebuild
+            sortedPosts.forEach(post => {
+                post.querySelector('.text-sm.text-gray-500').innerHTML = `
+                    <span class="domain-tag ${post.dataset.domain === 'New Hiring Opportunity' ? 'hiring' : 
+                                          post.dataset.domain === 'General' || post.dataset.domain === 'Success Story' ? 'general' : 'domain'}">${post.dataset.domain}</span>
+                    ${userDomains.includes(post.dataset.domain) ? '<span class="domain-tag recommended ml-2">Recommended</span>' : ''}
+                    • ${post.dataset.hours} hours ago <span class="hashtag">${post.dataset.hashtags}</span>
+                `;
+                postFeed.appendChild(post);
+            });
+        }
+
+        function searchPosts() {
+            filterPosts();
+        }
+
+        function searchByHashtag(hashtag) {
+            document.getElementById('searchBar').value = hashtag;
+            searchPosts();
+        }
+
+        function toggleAppreciate(button, postId) {
+            const appreciateSpan = document.getElementById(`${postId}-appreciates`);
+            let count = parseInt(appreciateSpan.textContent);
+            if (appreciatedPosts.has(postId)) {
+                appreciateSpan.textContent = count - 1;
+                document.getElementById(postId).dataset.popularity = count - 1;
+                button.classList.remove('appreciated');
+                appreciatedPosts.delete(postId);
+                addNotification(`${userName} unappreciated a post.`, '1 minute ago');
+            } else {
+                appreciateSpan.textContent = count + 1;
+                document.getElementById(postId).dataset.popularity = count + 1;
+                button.classList.add('appreciated');
+                appreciatedPosts.add(postId);
+                addNotification(`${userName} appreciated a post.`, '1 minute ago');
+            }
+            sortPosts();
+        }
+
+        function submitAnswer(postId) {
+            const answerInput = document.getElementById(`${postId}-answer-input`);
+            if (answerInput && answerInput.value.trim()) {
+                const answerSpan = document.getElementById(`${postId}-answers`);
+                let count = parseInt(answerSpan.textContent);
+                answerSpan.textContent = count + 1;
+                answers[postId] = answers[postId] || [];
+                answers[postId].push({ user: userName, role: 'Alumni', text: answerInput.value, timestamp: 'Just now' });
+                updateAnswersContainer(postId);
+                answerInput.value = '';
+                addNotification(`${userName} answered a post.`, 'Just now');
+            } else {
+                alert('Answer cannot be empty.');
+            }
+        }
+
+        function uploadPost() {
+            const title = document.getElementById('postTitle').value;
+            const content = document.getElementById('postContent').value;
+            const hashtags = document.getElementById('postHashtags').value;
+            const domain = document.getElementById('postDomain').value;
+            const image = document.getElementById('postImage').files[0];
+            if (!title.trim() || !content.trim()) {
+                alert('Post title and content cannot be empty.');
                 return;
             }
+            if (!domain) {
+                alert('Please select a domain.');
+                return;
+            }
+            const postId = `post${postIdCounter++}`;
+            const post = document.createElement('div');
+            post.id = postId;
+            post.className = 'post-card bg-white p-6 rounded-lg shadow-md border border-gray-300';
+            post.dataset.domain = domain;
+            post.dataset.popularity = 0;
+            post.dataset.hours = 0.1;
+            post.dataset.hashtags = hashtags;
+            const badgeClass = domain === 'New Hiring Opportunity' ? 'hiring' : 
+                             domain === 'General' || domain === 'Success Story' ? 'general' : 'domain';
+            const isRecommended = userDomains.includes(domain);
+            post.innerHTML = `
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-900 font-medium">S</div>
+                    <div>
+                        <div class="font-semibold text-gray-800">${userName} <span class="user-badge ml-2">Alumni</span></div>
+                        <div class="text-sm text-gray-500">
+                            <span class="domain-tag ${badgeClass}">${domain}</span>
+                            ${isRecommended ? '<span class="domain-tag recommended ml-2">Recommended</span>' : ''}
+                            • Just now ${hashtags ? `<span class="hashtag">${hashtags}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+                <p class="text-gray-700 mb-2 font-medium">${title}</p>
+                <p class="text-gray-600 mb-4">${content}</p>
+                ${image ? `<img src="${URL.createObjectURL(image)}" class="w-full h-40 object-cover rounded-lg mb-4" alt="Post Image">` : ''}
+                <div class="flex gap-4 mb-4">
+                    <button class="flex items-center gap-1 text-gray-600 hover:text-red-500" onclick="toggleAppreciate(this, '${postId}')">
+                        <span>❤️</span> Appreciate (<span id="${postId}-appreciates">0</span>)
+                    </button>
+                    <button class="flex items-center gap-1 text-gray-600 hover:text-indigo-500" onclick="toggleAnswers('${postId}')">
+                        <span>💬</span> Answer (<span id="${postId}-answers">0</span>)
+                    </button>
+                </div>
+                <div id="${postId}-answers-container" class="hidden"></div>
+            `;
+            allPosts.unshift(post);
+            document.getElementById('postFeed').prepend(post);
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postContent').value = '';
+            document.getElementById('postHashtags').value = '';
+            document.getElementById('postImage').value = '';
+            addNotification(`${userName} shared a new post.`, 'Just now');
+            filterPosts();
+        }
 
-            // Simulate sending notifications
-            const participantCount = event.participants.length;
-            const message = `Event Reminder: "${event.title}"
+        function loadMorePosts() {
+            const postFeed = document.getElementById('postFeed');
+            const loading = document.getElementById('loading');
+            const visiblePosts = allPosts.filter(post => post.style.display !== 'none');
+            const userDomainPosts = visiblePosts.filter(post => userDomains.includes(post.dataset.domain));
+            const otherPosts = visiblePosts.filter(post => !userDomains.includes(post.dataset.domain));
+            const sortedPosts = [...userDomainPosts, ...otherPosts];
+            postFeed.innerHTML = ''; // Clear and rebuild with sorted order
+            sortedPosts.slice(0, page * postsPerPage).forEach(post => postFeed.appendChild(post));
+            loading.style.display = sortedPosts.length > page * postsPerPage ? 'block' : 'none';
+        }
 
-Date: ${formatDate(event.date)}
-Time: ${event.startTime} - ${event.endTime}
-Location: ${event.location}
+        function addNotification(text, timestamp) {
+            notifications.unshift({ id: notifications.length + 1, user: userName, role: 'Alumni', text, timestamp });
+            updateNotifications();
+        }
 
-Notifications will be sent to ${participantCount} participant(s) via email.`;
+        function clearNotifications() {
+            notifications = [];
+            updateNotifications();
+            toggleNotificationPopup();
+        }
 
-            if (confirm(message + '\n\nProceed with sending notifications?')) {
-                // In a real application, this would send actual emails/SMS
-                alert(`✅ Notifications sent successfully to ${participantCount} participant(s)!\n\nEmails have been queued for delivery.`);
+        function updateNotifications() {
+            const notificationButton = document.querySelector('.notification-bell');
+            notificationButton.dataset.count = notifications.length;
+            const container = document.getElementById('notifications-container');
+            container.innerHTML = notifications.length ? notifications.map(n => `
+                <div class="flex items-center gap-4 p-4 border-b border-gray-200">
+                    <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-900 font-medium">${n.user[0]}</div>
+                    <div>
+                        <div class="font-semibold text-gray-800">${n.user} <span class="user-badge ml-2">${n.role}</span></div>
+                        <p class="text-sm text-gray-600">${n.text}</p>
+                        <p class="text-xs text-gray-500">${n.timestamp}</p>
+                    </div>
+                </div>
+            `).join('') : '<p class="text-gray-600 text-sm">No notifications yet.</p>';
+        }
+
+        function toggleNotificationPopup() {
+            const popup = document.getElementById('notification-popup');
+            const overlay = document.getElementById('notification-overlay');
+            const isVisible = popup.style.display === 'block';
+            popup.style.display = isVisible ? 'none' : 'block';
+            overlay.style.display = isVisible ? 'none' : 'block';
+        }
+
+        function showConversation(user) {
+            const title = document.getElementById('conversation-title');
+            const messagesContainer = document.getElementById('conversation-messages');
+            title.textContent = `Conversation with ${user}`;
+            messagesContainer.innerHTML = messages[user]?.map(m => `
+                <div class="${m.isSent ? 'text-right' : 'text-left'}">
+                    <div class="inline-block p-3 rounded-lg ${m.isSent ? 'bg-indigo-100 text-indigo-900' : 'bg-gray-100 text-gray-800'}">
+                        <p class="text-sm">${m.text}</p>
+                        <p class="text-xs text-gray-500">${m.timestamp}</p>
+                    </div>
+                </div>
+            `).join('') || '<p class="text-gray-600 text-sm">No messages yet.</p>';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const title = document.getElementById('conversation-title').textContent;
+            const user = title.replace('Conversation with ', '');
+            if (input.value.trim()) {
+                messages[user] = messages[user] || [];
+                messages[user].push({ user: userName, text: input.value, timestamp: 'Just now', isSent: true });
+                showConversation(user);
+                input.value = '';
+                addNotification(`${userName} sent a message to ${user}.`, 'Just now');
+            } else {
+                alert('Message cannot be empty.');
             }
         }
+
+        function toggleEditProfile() {
+            const inputs = ['profile-name', 'profile-bio', 'profile-achievements', 'profile-skills'];
+            const checkboxes = document.querySelectorAll('input[name="profile-domains"]');
+            const isEditing = !document.getElementById('profile-name').disabled;
+            inputs.forEach(id => document.getElementById(id).disabled = isEditing);
+            checkboxes.forEach(checkbox => checkbox.disabled = isEditing);
+            document.getElementById('edit-profile-btn').classList.toggle('hidden', !isEditing);
+            document.getElementById('save-profile-btn').classList.toggle('hidden', isEditing);
+            if (!isEditing) {
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = userDomains.includes(checkbox.value);
+                });
+            }
+        }
+
+        function saveProfile() {
+            const name = document.getElementById('profile-name').value.trim();
+            const domains = Array.from(document.querySelectorAll('input[name="profile-domains"]:checked')).map(checkbox => checkbox.value);
+            const bio = document.getElementById('profile-bio').value.trim();
+            const achievements = document.getElementById('profile-achievements').value.trim();
+            const skills = document.getElementById('profile-skills').value.trim();
+            if (!name || !domains.length) {
+                alert('Name and at least one domain are required.');
+                return;
+            }
+            userName = name;
+            userDomains = domains; // Update with selected domains only
+            document.getElementById('profile-name-display').innerHTML = `${name} <span class="user-badge ml-2">Alumni</span>`;
+            document.getElementById('profile-domains').innerHTML = domains.map(d => `<span class="domain-tag domain">${d}</span>`).join(' ') + ' • Class of 2015';
+            toggleEditProfile();
+            document.getElementById('domainFilter').value = 'None';
+            const postFeed = document.getElementById('postFeed');
+            postFeed.innerHTML = ''; // Clear existing posts
+            initializePosts(); // Reinitialize with updated userDomains
+            sortPosts(); // Reorder based on new userDomains
+            filterPosts(); // Apply filters if any
+            addNotification(`${userName} updated their profile.`, 'Just now');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializePosts();
+            document.getElementById('domainFilter').value = 'None';
+            const checkboxes = document.querySelectorAll('input[name="profile-domains"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = userDomains.includes(checkbox.value);
+            });
+            filterPosts();
+            updateNotifications();
+        });
+
+        // Infinite scroll
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+                page++;
+                loadMorePosts();
+            }
+        });
     </script>
 </body>
 </html>
