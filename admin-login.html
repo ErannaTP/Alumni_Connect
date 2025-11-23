@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - KLE Alumni Connect</title>
-    <link rel="preload" href="alumni.html" as="document">
+    <link rel="preload" href="admin-dashboard.html" as="document">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -542,7 +542,7 @@
                 }
                 
                 // Immediate redirect without delay
-                window.location.href = 'alumni.html';
+                window.location.href = 'admin-dashboard.html';
             } else {
                 showAlert('Invalid email or password. Please try again.', 'error');
             }
@@ -557,7 +557,7 @@
                 // Show loading overlay and redirect immediately
                 const loadingOverlay = document.getElementById('loading-overlay');
                 loadingOverlay.classList.add('show');
-                window.location.href = 'alumni.html';
+                window.location.href = 'admin-dashboard.html';
             } else {
                 // No session, show login page smoothly
                 document.body.classList.add('loaded');
