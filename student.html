@@ -114,11 +114,6 @@
     .checkbox-list label { display:flex; gap:8px; align-items:center; padding:6px 6px; cursor:pointer; }
     .small-note{ color:var(--muted); font-size:12px; margin-bottom:6px; }
 
-    /* Ratings select */
-    select.ratings {
-      padding:8px 10px; border-radius:8px; border:1px solid #e6eef6; background:#fff; font-weight:600;
-    }
-
     /* Apply / Clear */
     .filters-actions{
       display:flex; gap:8px; align-items:center; margin-left:12px;
@@ -168,16 +163,18 @@
   <header>
     <div class="topbar">
       <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
+        <!-- Replaced empty logo with KLE Tech Logo -->
+        <img src="kle.png" alt="KLE Tech Logo" class="logo" style="height:38px; width:38px; border-radius:8px;">
         <div>
           <div class="title">Alumni Connect</div>
           <div style="font-size:12px; color:rgba(255,255,255,0.92)">Student Portal</div>
         </div>
       </div>
-
+      
       <nav id="navbar" aria-label="Main nav">
         <button id="nav-alumni" class="active" onclick="showPage('alumni')">Alumni</button>
         <button id="nav-requests" onclick="showPage('requests')">My Requests</button>
+        <button id="nav-events" onclick="showPage('events')">Events</button>
         <button id="nav-profile" onclick="showPage('profile')">Profile</button>
         <button onclick="logout()">Logout</button>
       </nav>
@@ -227,17 +224,7 @@
             </div>
           </div>
 
-          <!-- Ratings compact select -->
-          <div>
-            <select id="ratingSelect" class="ratings" aria-label="Ratings">
-              <option value="">All Ratings</option>
-              <option value="4.5">4.5 & up</option>
-              <option value="4.0">4.0 & up</option>
-              <option value="3.0">3.0 & up</option>
-            </select>
-          </div>
         </div>
-
         <div class="filters-actions">
           <button class="btn ghost" id="clearAllBtn">Clear</button>
           <button class="btn primary" id="applyBtn">Apply</button>
@@ -265,7 +252,6 @@
               <th>Alumni ID</th>
               <th>Name</th>
               <th>Domain</th>
-              <th>Rating</th>
               <th>Status</th>
               <th>Sent</th>
             </tr>
@@ -337,6 +323,16 @@
         </form>
       </div>
     </section>
+    
+    <!-- EVENTS -->
+    <section id="events" class="page" style="display:none;">
+      <h2 style="color:var(--brand)">Upcoming Events</h2>
+      <p style="color:var(--muted)">Stay updated with the latest events organized by the administration</p>
+      
+      <div id="eventsContainer" style="margin-top:20px;">
+        <!-- Events will be loaded here -->
+      </div>
+    </section>
   </main>
 
   <!-- Connect modal -->
@@ -371,23 +367,33 @@
   <script>
     /* Demo data */
     const alumniData = [
-      { id:2001, name:"Kriti P", dept:"CSE", batch:"2023", role:"Data Analyst", domain:"Data Science", bio:"Data enthusiast & mentor", rating:4.8, img:"https://i.pravatar.cc/160?img=1" },
-      { id:2002, name:"Swapnil T", dept:"CSE", batch:"2021", role:"Software Engineer", domain:"Web Development", bio:"Full-stack developer & mentor", rating:4.6, img:"https://i.pravatar.cc/160?img=2" },
-      { id:2003, name:"Sneha R", dept:"IT", batch:"2020", role:"Security Analyst", domain:"Cybersecurity", bio:"Security specialist", rating:4.9, img:"https://i.pravatar.cc/160?img=3" },
-      { id:2004, name:"Ramesh K", dept:"CSE", batch:"2022", role:"ML Engineer", domain:"AI/ML", bio:"ML & MLOps engineer", rating:4.3, img:"https://i.pravatar.cc/160?img=4" },
-      { id:2005, name:"Priya S", dept:"EEE", batch:"2021", role:"Data Analyst", domain:"Data Science", bio:"Analytics and visualization", rating:4.7, img:"https://i.pravatar.cc/160?img=5" }
+      { id:2001, name:"Kriti P", dept:"CSE", batch:"2023", role:"Data Analyst", domain:"Data Science", bio:"Data enthusiast & mentor", img:"https://i.pravatar.cc/160?img=1" },
+      { id:2002, name:"Swapnil T", dept:"CSE", batch:"2021", role:"Software Engineer", domain:"Web Development", bio:"Full-stack developer & mentor", img:"https://i.pravatar.cc/160?img=2" },
+      { id:2003, name:"Sneha R", dept:"IT", batch:"2020", role:"Security Analyst", domain:"Cybersecurity", bio:"Security specialist", img:"https://i.pravatar.cc/160?img=3" },
+      { id:2004, name:"Ramesh K", dept:"CSE", batch:"2022", role:"ML Engineer", domain:"AI/ML", bio:"ML & MLOps engineer", img:"https://i.pravatar.cc/160?img=4" },
+      { id:2005, name:"Priya S", dept:"EEE", batch:"2021", role:"Data Analyst", domain:"Data Science", bio:"Analytics and visualization", img:"https://i.pravatar.cc/160?img=5" }
     ];
+    
+    // Demo events data
+    const eventsData = [
+      { id:1, title:"Alumni Meet 2023", date:"2023-12-15", time:"10:00 AM", venue:"Main Auditorium", description:"Annual alumni meet to reconnect with classmates and faculty." },
+      { id:2, title:"Career Guidance Workshop", date:"2023-12-20", time:"2:00 PM", venue:"Seminar Hall 1", description:"Industry experts sharing insights on career opportunities." },
+      { id:3, title:"Tech Talk Series", date:"2024-01-05", time:"4:00 PM", venue:"Virtual Event", description:"Webinar on emerging technologies and trends." },
+      { id:4, title:"Placement Preparation Bootcamp", date:"2024-01-12", time:"9:00 AM", venue:"Computer Lab", description:"Hands-on sessions to prepare for campus placements." }
+    ];
+    
     let connections = JSON.parse(localStorage.getItem("ac_connections_demo") || "[]");
 
     const $ = id => document.getElementById(id);
 
     function showPage(id){
-      ["alumni","requests","profile"].forEach(p=>{
+      ["alumni","requests","events","profile"].forEach(p=>{
         $(p).style.display = (p===id) ? "block" : "none";
         const btn = $("nav-"+p);
         if(btn) btn.classList.toggle("active", p===id);
       });
       if(id === "requests") renderRequests();
+      if(id === "events") renderEvents();
     }
     function logout(){ window.location.href = "Final.html"; }
 
@@ -420,6 +426,8 @@
       $(name + "Panel").classList.remove("active");
       $(name + "Btn").setAttribute("aria-expanded","false");
       updateFilterButtonLabels();
+      // Apply filters when closing the panel
+      applyFilters();
     }
     // close if clicked outside
     document.addEventListener("click", (e)=>{
@@ -459,7 +467,6 @@
       $("searchBox").value = "";
       clearDomain();
       clearYear();
-      $("ratingSelect").value = "";
       applyFilters();
     });
 
@@ -468,8 +475,7 @@
       const q = ($("searchBox").value || "").trim().toLowerCase();
       const domains = Array.from(document.querySelectorAll("#domainList input[type=checkbox]:checked")).map(c=>c.value);
       const years = Array.from(document.querySelectorAll("#yearList input[type=checkbox]:checked")).map(c=>c.value);
-      const rating = $("ratingSelect").value ? parseFloat($("ratingSelect").value) : 0;
-      return { q, domains, years, rating };
+      return { q, domains, years };
     }
 
     /* Apply filters and render */
@@ -479,10 +485,8 @@
         const nameMatch = !f.q || a.name.toLowerCase().includes(f.q) || a.domain.toLowerCase().includes(f.q) || a.role.toLowerCase().includes(f.q);
         const domainMatch = f.domains.length === 0 || f.domains.includes(a.domain);
         const yearMatch = f.years.length === 0 || f.years.includes(String(a.batch));
-        const ratingMatch = a.rating >= f.rating;
-        return nameMatch && domainMatch && yearMatch && ratingMatch;
+        return nameMatch && domainMatch && yearMatch;
       });
-      list.sort((x,y)=> (y.rating||0) - (x.rating||0));
       renderAlumniList(list);
       updateFilterButtonLabels();
     }
@@ -510,7 +514,6 @@
                 <div class="meta">${a.role} • ${a.dept} • ${a.domain}</div>
               </div>
               <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
-                <div style="font-weight:800;color:#b45309">${a.rating} ★</div>
                 <div class="card-actions">
                   <button class="btn primary" onclick="openConnect(${a.id})">Connect</button>
                 </div>
@@ -533,7 +536,7 @@
       $("modalAvatar").src = a.img;
       $("modalName").textContent = a.name;
       $("modalBatch").textContent = `(${a.batch})`;
-      $("modalMeta").textContent = `${a.role} • ${a.dept} • ${a.domain} • ${a.rating} ★`;
+      $("modalMeta").textContent = `${a.role} • ${a.dept} • ${a.domain}`;
       $("modalBio").textContent = a.bio;
       $("modalMessage").value = "";
       $("modalBackdrop").style.display = "flex";
@@ -553,7 +556,6 @@
         alumniId: currentAlumni.id,
         alumniName: currentAlumni.name,
         domain: currentAlumni.domain,
-        rating: currentAlumni.rating,
         message: msg,
         status: "Pending",
         createdAt: new Date().toISOString()
@@ -578,14 +580,60 @@
           <td>${r.alumniId}</td>
           <td>${r.alumniName}</td>
           <td>${r.domain}</td>
-          <td>${r.rating} ★</td>
           <td>${r.status}</td>
           <td>${new Date(r.createdAt).toLocaleDateString()}</td>
         `;
         tbody.appendChild(tr);
       });
     }
-
+    
+    /* Render events list */
+    function renderEvents(){
+      const container = $("eventsContainer");
+      container.innerHTML = "";
+      
+      if(eventsData.length === 0){
+        container.innerHTML = `<div style="padding:18px; color:${'#6b7280'}; background:#fff; border-radius:8px; border:1px solid #eef3fb">No events scheduled.</div>`;
+        return;
+      }
+      
+      // Sort events by date
+      const sortedEvents = [...eventsData].sort((a, b) => new Date(a.date) - new Date(b.date));
+      
+      sortedEvents.forEach(event=>{
+        const eventCard = document.createElement("div");
+        eventCard.className = "alumni-card";
+        eventCard.innerHTML = `
+          <div style="flex:1">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+              <h3 style="margin:0; font-size:18px; font-weight:700; color:var(--brand)">${event.title}</h3>
+              <div style="background:#dbeafe; color:#1e40af; padding:4px 8px; border-radius:12px; font-size:12px; font-weight:600;">
+                ${new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              </div>
+            </div>
+            <div style="display:flex; gap:16px; margin-bottom:12px; flex-wrap:wrap;">
+              <div style="display:flex; align-items:center; gap:6px; color:#6b7280">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>${event.time}</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px; color:#6b7280">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <span>${event.venue}</span>
+              </div>
+            </div>
+            <p style="color:#374151; margin:0;">${event.description}</p>
+          </div>
+        `;
+        container.appendChild(eventCard);
+      });
+    }
+    
     /* profile storage */
     const PROFILE_KEY = "ac_student_profile_v1";
     function loadProfile(){
@@ -632,18 +680,12 @@
       updateFilterButtonLabels();
       applyFilters(); // show all initially
       renderRequests();
+      renderEvents(); // render events on page load
       loadProfile();
     }
 
     // helper escape (used while creating inputs)
     function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-    // close panel programmatically (used by Done button)
-    function closePanel(name){
-      $(name + "Panel").classList.remove("active");
-      $(name + "Btn").setAttribute("aria-expanded","false");
-      updateFilterButtonLabels();
-    }
 
     // wire clear/close events after DOM built
     document.addEventListener("DOMContentLoaded", init);
