@@ -1,0 +1,218 @@
+<script>
+  if (!localStorage.getItem("token")) {
+    window.location.href = "/pages/login.html";
+  }
+</script>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Alumni Setu - Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: "Inter", sans-serif;
+      background: #0f0f11;
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: rgba(22, 22, 27, 0.75);
+      backdrop-filter: blur(12px);
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-button {
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-weight: 500;
+      transition: .25s;
+      color: #d0d0d0;
+    }
+
+    .nav-button:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: white;
+      transform: translateX(4px);
+    }
+
+    .active-nav {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white !important;
+      box-shadow: 0 4px 14px rgba(140, 82, 255, 0.4);
+    }
+
+    /* Header */
+    .topbar {
+      background: rgba(22, 22, 27, 0.7);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 18px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Input fields */
+    .input-premium {
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 12px;
+      border-radius: 10px;
+      width: 100%;
+      transition: .25s;
+    }
+
+    .input-premium:focus {
+      border-color: #a78bfa;
+      box-shadow: 0 0 0 4px rgba(140, 82, 255, 0.25);
+      outline: none;
+    }
+
+    /* Profile Card */
+    .profile-card {
+      background: rgba(22, 22, 27, 0.65);
+      border-radius: 18px;
+      padding: 28px;
+      margin-top: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Domain Chips */
+    .chip {
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: .25s;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      margin: 4px;
+    }
+
+    .chip:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .chip-selected {
+      background: #8b5cf6;
+      color: white;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Buttons */
+    .button-primary {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+      padding: 12px 22px;
+      border-radius: 10px;
+      transition: .25s;
+      font-weight: 600;
+      box-shadow: 0 4px 14px rgba(140, 82, 255, 0.35);
+    }
+
+    .button-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(140, 82, 255, 0.55);
+    }
+  </style>
+</head>
+
+<body class="flex">
+
+  <!-- Sidebar -->
+  <div class="sidebar p-6 flex flex-col gap-4">
+    <div class="text-3xl font-bold mb-4">Alumni Setu</div>
+
+    <button class="nav-button" onclick="window.location.href='feed.html'">Home</button>
+    <button class="nav-button active-nav">Profile</button>
+    <button class="nav-button" onclick="window.location.href='messages.html'">Messages</button>
+  </div>
+
+  <!-- Main Section -->
+  <div class="flex-1">
+
+    <!-- Header -->
+    <div class="topbar">
+      <h2 class="text-xl font-semibold text-purple-200">Profile Settings</h2>
+      <span class="text-gray-300 text-sm">Logged in as Alumni</span>
+    </div>
+
+    <!-- Body -->
+    <div class="p-10">
+      <h1 class="text-4xl font-bold mb-6">Your Profile</h1>
+
+      <div class="profile-card">
+
+        <!-- Avatar -->
+        <div class="flex items-center gap-6 mb-8">
+          <div id="profile-avatar"
+            class="w-20 h-20 rounded-full bg-purple-500 flex items-center justify-center text-3xl font-bold">
+            U
+          </div>
+
+          <div>
+            <div id="profile-name-display" class="text-2xl font-semibold">User</div>
+            <div id="profile-domains" class="text-sm text-gray-400 mt-1"></div>
+          </div>
+        </div>
+
+        <!-- Grid Inputs -->
+        <div class="grid grid-cols-1 gap-5">
+          <div>
+            <label>Name:</label>
+            <input id="profile-name" class="input-premium" disabled>
+          </div>
+
+          <div>
+            <label>Bio:</label>
+            <textarea id="profile-bio" class="input-premium" rows="3" disabled></textarea>
+          </div>
+
+          <div>
+            <label>Company:</label>
+            <input id="profile-company" class="input-premium" disabled>
+          </div>
+
+          <div>
+            <label>Position / Role:</label>
+            <input id="profile-position" class="input-premium" disabled>
+          </div>
+
+          <div>
+            <label>Batch Year:</label>
+            <input id="profile-batch" type="number" class="input-premium" disabled>
+          </div>
+
+          <div>
+            <label>Domains:</label>
+            <div id="profile-domains-checkboxes"
+              class="flex flex-wrap gap-2 p-3 bg-black/20 rounded-xl border border-white/10"></div>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex gap-4 mt-8">
+          <button id="edit-profile-btn" class="button-primary" onclick="toggleEditProfile()">Edit Profile</button>
+          <button id="save-profile-btn" class="button-primary hidden" onclick="saveProfile()">Save Profile</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="../js/profile.js"></script>
+
+</body>
+</html>
