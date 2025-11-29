@@ -171,6 +171,7 @@
     <nav id="navbar">
       <button onclick="showPage('home')">Home</button>
       <button onclick="showPage('alumni')">Alumni</button>
+      <button onclick="showPage('events')">Events</button>
       <button onclick="showPage('requests')">My Requests</button>
       <button onclick="showPage('profile')">Profile</button>
       <button onclick="logout()">Logout</button>
@@ -264,6 +265,13 @@
     <div class="grid" id="alumniList"></div>
   </div>
 
+  <!-- Events -->
+  <div id="events" class="page">
+    <h2>Upcoming Events</h2>
+    <p style="color: #666; margin-bottom: 20px;">Connect with alumni and fellow students at these events organized by the administration.</p>
+    <div class="grid" id="eventsContainer"></div>
+  </div>
+
   <!-- Chat Box -->
   <div class="chat-box" id="chatBox">
     <div class="chat-header">Chat with Alumni</div>
@@ -282,7 +290,7 @@
       { name: "Priya S", dept: "EEE", year: 2021, domain: "Data Analyst", rating: 5, img: "https://i.pravatar.cc/80?img=5" }
     ];
 
-    const pages = ["login","register","home","alumni","requests","profile"];
+    const pages = ["login","register","home","alumni","events","requests","profile"];
     function showPage(id){
       pages.forEach(p => document.getElementById(p).style.display = "none");
       document.getElementById(id).style.display = "block";
@@ -332,15 +340,109 @@
     // Chat feature
     function openChat(name){
       document.getElementById("chatBox").style.display = "block";
-      document.getElementById("chatBody").innerHTML = <b>Chat started with ${name}</b>;
+      document.getElementById("chatBody").innerHTML = '<b>Chat started with ${name}</b>';
     }
     function sendMessage(){
       const input = document.getElementById("chatInput");
       if(input.value.trim() !== ""){
-        document.getElementById("chatBody").innerHTML += <br>You: ${input.value};
+        document.getElementById("chatBody").innerHTML += '<br>You: ${input.value}';
         input.value = "";
       }
     }
+    
+    // Events functionality
+    function renderEvents(events) {
+      const container = document.getElementById("eventsContainer");
+      container.innerHTML = "";
+      
+      if (!events || events.length === 0) {
+        container.innerHTML = `<div style="text-align: center; padding: 40px; color: #666;">
+          <h3>No upcoming events</h3>
+          <p>Check back later for new events organized by the administration.</p>
+        </div>`;
+        return;
+      }
+      
+      events.forEach(event => {
+        const eventDate = new Date(event.date);
+        const formattedDate = eventDate.toLocaleDateString('en-US', { 
+          weekday: 'short', 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric' 
+        });
+        
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div style="background: #e0f2fe; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+            <h3 style="margin: 0 0 5px 0; color: #1e3a8a;">${event.title}</h3>
+            <div style="display: flex; align-items: center; gap: 10px; color: #374151; font-size: 14px;">
+              <span>📅 ${formattedDate}</span>
+              <span>📍 ${event.location}</span>
+            </div>
+          </div>
+          <p style="color: #374151; margin: 15px 0;">${event.description}</p>
+          ${event.isVirtual ? `<div style="background: #fef3c7; padding: 8px; border-radius: 6px; margin: 10px 0; font-size: 14px;">
+            <strong>Virtual Event</strong><br>
+            <a href="${event.meetingLink || '#'}" target="_blank" style="color: #1e3a8a;">Join Meeting</a>
+          </div>` : ''}
+          <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px;">
+            ${(event.tags || []).map(tag => `<span style="background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 12px; font-size: 12px;">${tag}</span>`).join('')}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+    
+    // For demo purposes, we'll use static data
+    // In a real implementation, this would fetch from the API
+    const demoEvents = [
+      {
+        id: 1,
+        title: 'Alumni Networking Meetup',
+        description: 'Join us for an evening of networking with fellow alumni and students. Share experiences, build connections, and explore career opportunities.',
+        date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        location: 'Main Auditorium, KLE Campus',
+        isVirtual: false,
+        tags: ['Networking', 'Career']
+      },
+      {
+        id: 2,
+        title: 'Career Guidance Webinar',
+        description: 'Learn about emerging career opportunities in the tech industry from our distinguished alumni panel.',
+        date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+        location: 'Online via Zoom',
+        isVirtual: true,
+        meetingLink: 'https://zoom.us/j/1234567890',
+        tags: ['Webinar', 'Career']
+      }
+    ];
+    
+    // Render demo events when the events page is shown
+    const originalShowPage = showPage;
+    showPage = function(id) {
+      originalShowPage(id);
+      if (id === 'events') {
+        renderEvents(demoEvents);
+      }
+    };
+    
+    // In a real implementation, you would fetch events from the API like this:
+    /*
+    async function fetchEvents() {
+      try {
+        const response = await fetch('/api/students/events');
+        const data = await response.json();
+        if (data.success) {
+          renderEvents(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching events:', error);
+        renderEvents([]);
+      }
+    }
+    */
   </script>
 
 </body>

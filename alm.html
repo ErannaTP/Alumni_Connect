@@ -221,6 +221,12 @@
                 </svg>
                 Messages
             </button>
+            <button class="nav-button flex items-center gap-2 p-3 rounded-lg text-gray-700" onclick="showSection('events')">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Events
+            </button>
         </nav>
         <div class="mt-4">
             <h3 class="text-lg font-semibold text-gray-800 mb-2">Popular Hashtags</h3>
@@ -401,6 +407,14 @@ Keynote speaker at CyberSec Summit 2024</textarea>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+ 
+            <!-- Events Section -->
+            <div id="events" class="section hidden">
+                <h2 class="text-2xl font-bold text-indigo-900 mb-6">Upcoming Events</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="events-container">
+                    <!-- Events will be loaded here -->
                 </div>
             </div>
         </div>
@@ -839,6 +853,135 @@ Keynote speaker at CyberSec Summit 2024</textarea>
                 loadMorePosts();
             }
         });
+        
+        // Events functionality
+        function renderEvents(events) {
+            const container = document.getElementById('events-container');
+            container.innerHTML = '';
+            
+            if (!events || events.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <div class="text-gray-500 mb-4">📅</div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">No upcoming events</h3>
+                        <p class="text-gray-600">Check back later for new events organized by the administration.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            events.forEach(event => {
+                const eventDate = new Date(event.date);
+                const formattedDate = eventDate.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                const formattedTime = eventDate.toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
+                const eventCard = document.createElement('div');
+                eventCard.className = 'bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden';
+                eventCard.innerHTML = `
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold text-gray-900">${event.title}</h3>
+                            ${event.isVirtual ? '<span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">Virtual</span>' : ''}
+                        </div>
+                        <p class="text-gray-600 mb-4">${event.description}</p>
+                        <div class="flex items-center text-gray-500 mb-2">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span>${formattedDate} at ${formattedTime}</span>
+                        </div>
+                        <div class="flex items-center text-gray-500 mb-4">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span>${event.location}</span>
+                        </div>
+                        ${event.isVirtual && event.meetingLink ? `
+                        <div class="mb-4">
+                            <a href="${event.meetingLink}" target="_blank" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                                Join Virtual Event
+                            </a>
+                        </div>` : ''}
+                        <div class="flex flex-wrap gap-2">
+                            ${(event.tags || []).map(tag => `
+                                <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">${tag}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(eventCard);
+            });
+        }
+        
+        // For demo purposes, we'll use static data
+        // In a real implementation, this would fetch from the API
+        const demoEvents = [
+            {
+                id: 1,
+                title: 'Alumni Networking Meetup',
+                description: 'Join us for an evening of networking with fellow alumni and students. Share experiences, build connections, and explore career opportunities.',
+                date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                location: 'Main Auditorium, KLE Campus',
+                isVirtual: false,
+                tags: ['Networking', 'Career']
+            },
+            {
+                id: 2,
+                title: 'Career Guidance Webinar',
+                description: 'Learn about emerging career opportunities in the tech industry from our distinguished alumni panel.',
+                date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+                location: 'Online via Zoom',
+                isVirtual: true,
+                meetingLink: 'https://zoom.us/j/1234567890',
+                tags: ['Webinar', 'Career']
+            },
+            {
+                id: 3,
+                title: 'Industry Trends Workshop',
+                description: 'Hands-on workshop covering the latest trends in AI, Machine Learning, and Data Science.',
+                date: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000),
+                location: 'Computer Science Department Lab',
+                isVirtual: false,
+                tags: ['Workshop', 'AI', 'ML']
+            }
+        ];
+        
+        // Override showSection to render events when the events section is shown
+        const originalShowSection = showSection;
+        showSection = function(sectionId) {
+            originalShowSection(sectionId);
+            if (sectionId === 'events') {
+                renderEvents(demoEvents);
+            }
+        };
+        
+        // In a real implementation, you would fetch events from the API like this:
+        /*
+        async function fetchEvents() {
+            try {
+                const response = await fetch('/api/alumni/events');
+                const data = await response.json();
+                if (data.success) {
+                    renderEvents(data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching events:', error);
+                renderEvents([]);
+            }
+        }
+        */
     </script>
 </body>
 </html>
